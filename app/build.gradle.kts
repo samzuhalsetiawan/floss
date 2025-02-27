@@ -66,4 +66,6 @@ dependencies {
     coreLibraryDesugaring(libs.java.desugaring)
     // Material Icon Extended
     implementation(libs.androidx.material.icon)
+    // Splash Screen
+    implementation(libs.androidx.splashscreen)
 }

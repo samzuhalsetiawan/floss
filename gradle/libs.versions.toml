@@ -12,7 +12,8 @@ composeBom = "2025.02.00"
 navigationCompose = "2.9.0-alpha06"
 kotlinSerialization = "1.7.3"
 kotlinSerializationPlugin = "2.0.21"
-desugaring = "2.1.4"
+desugaring = "2.1.5"
+splashScreen = "1.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +35,7 @@ androidx-material-icon = { group = "androidx.compose.material", name = "material
 navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 kotlin-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version.ref = "kotlinSerialization" }
 java-desugaring = { group = "com.android.tools", name = "desugar_jdk_libs",version.ref = "desugaring" }
+androidx-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "splashScreen" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
