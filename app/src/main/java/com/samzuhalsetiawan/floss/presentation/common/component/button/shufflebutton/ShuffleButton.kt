@@ -1,11 +1,11 @@
-package com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.shufflebutton
+package com.samzuhalsetiawan.floss.presentation.common.component.button.shufflebutton
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.samzuhalsetiawan.floss.presentation.common.component.iconbutton.IconButton
+import com.samzuhalsetiawan.floss.presentation.common.component.button.iconbutton.IconButton
 
 @Composable
 fun ShuffleButton(

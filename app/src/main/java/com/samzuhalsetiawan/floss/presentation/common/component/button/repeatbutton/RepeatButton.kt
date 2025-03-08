@@ -1,4 +1,4 @@
-package com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.repeatbutton
+package com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Repeat
@@ -6,7 +6,7 @@ import androidx.compose.material.icons.filled.RepeatOne
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.samzuhalsetiawan.floss.presentation.common.component.iconbutton.IconButton
+import com.samzuhalsetiawan.floss.presentation.common.component.button.iconbutton.IconButton
 
 enum class RepeatMode {
    SINGLE,

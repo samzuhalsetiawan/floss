@@ -1,6 +1,5 @@
 package com.samzuhalsetiawan.floss.presentation.screen.controlscreen
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,30 +10,22 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableLongStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.samzuhalsetiawan.floss.presentation.common.component.text.headlinetext.HeadlineText
 import com.samzuhalsetiawan.floss.presentation.common.component.text.normaltext.NormalText
-import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.albumart.AlbumArt
+import com.samzuhalsetiawan.floss.presentation.common.component.albumart.AlbumArt
 import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.header.Header
-import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.musicprogressbar.MusicProgressBar
-import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.nextbutton.NextButton
-import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.playbutton.PlayButton
-import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.prevbutton.PrevButton
-import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.repeatbutton.RepeatButton
-import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.repeatbutton.RepeatMode
-import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.shufflebutton.ShuffleButton
+import com.samzuhalsetiawan.floss.presentation.common.component.musicprogressbar.MusicProgressBar
+import com.samzuhalsetiawan.floss.presentation.common.component.button.nextbutton.NextButton
+import com.samzuhalsetiawan.floss.presentation.common.component.button.playbutton.PlayButtonLarge
+import com.samzuhalsetiawan.floss.presentation.common.component.button.prevbutton.PrevButton
+import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatButton
+import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatMode
+import com.samzuhalsetiawan.floss.presentation.common.component.button.shufflebutton.ShuffleButton
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.withTimeout
 
 @Composable
 fun ControlScreen() {
@@ -78,7 +69,7 @@ fun ControlScreen() {
          ) {
             RepeatButton(repeatMode = RepeatMode.OFF)
             PrevButton()
-            PlayButton()
+            PlayButtonLarge()
             NextButton()
             ShuffleButton(isShuffleOn = false)
          }

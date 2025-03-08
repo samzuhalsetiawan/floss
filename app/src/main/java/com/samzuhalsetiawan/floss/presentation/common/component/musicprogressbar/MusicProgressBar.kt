@@ -1,4 +1,4 @@
-package com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.musicprogressbar
+package com.samzuhalsetiawan.floss.presentation.common.component.musicprogressbar
 
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.background

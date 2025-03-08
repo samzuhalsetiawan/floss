@@ -1,4 +1,4 @@
-package com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.albumart
+package com.samzuhalsetiawan.floss.presentation.common.component.albumart
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,6 +22,20 @@ fun AlbumArt(
          .background(
             color = MaterialTheme.colorScheme.primary,
             shape = MaterialTheme.shapes.medium
+         )
+   )
+}
+
+
+@Composable
+fun AlbumArtSmall(
+   modifier: Modifier = Modifier
+) {
+   Box(
+      modifier = modifier
+         .background(
+            color = MaterialTheme.colorScheme.primary,
+            shape = MaterialTheme.shapes.small
          )
    )
 }

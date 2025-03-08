@@ -1,10 +1,10 @@
-package com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.prevbutton
+package com.samzuhalsetiawan.floss.presentation.common.component.button.prevbutton
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.samzuhalsetiawan.floss.presentation.common.component.iconbutton.IconButton
+import com.samzuhalsetiawan.floss.presentation.common.component.button.iconbutton.IconButton
 
 @Composable
 fun PrevButton(
