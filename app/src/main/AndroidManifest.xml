@@ -15,12 +15,12 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Floss"
+        android:theme="@style/Theme.Floss.Splash"
         tools:targetApi="31">
         <activity
             android:name=".presentation.MainActivity"
             android:exported="true"
-            android:theme="@style/Theme.Floss">
+            android:theme="@style/Theme.Floss.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

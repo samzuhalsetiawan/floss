@@ -12,6 +12,8 @@ import androidx.compose.material.icons.filled.Fullscreen
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,7 +23,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.samzuhalsetiawan.floss.domain.model.Music
 import com.samzuhalsetiawan.floss.domain.util.dummy.DummyData
-import com.samzuhalsetiawan.floss.presentation.common.component.button.iconbutton.IconButton
 import com.samzuhalsetiawan.floss.presentation.common.component.text.normaltext.NormalText
 import com.samzuhalsetiawan.floss.presentation.common.component.text.subtext.SubText
 import com.samzuhalsetiawan.floss.presentation.common.component.musicprogressbar.MusicProgressBar
@@ -94,15 +95,22 @@ fun MusicList(
                }
                if (expanded) {
                   IconButton(
-                     icon = Icons.Default.Fullscreen,
-                     contentDescription = null /*TODO: add content description */
-                  )
+                     onClick = {}
+                  ) {
+                     Icon(
+                        imageVector = Icons.Default.Fullscreen,
+                        contentDescription = null /*TODO: add content description */
+                     )
+                  }
                } else {
                   IconButton(
-                     icon = Icons.Default.MoreVert,
-                     contentDescription = null /*TODO: add content description */,
                      onClick = onPlayButtonClick
-                  )
+                  ) {
+                     Icon(
+                        imageVector = Icons.Default.MoreVert,
+                        contentDescription = null /*TODO: add content description */,
+                     )
+                  }
                }
             }
             if (expanded) {

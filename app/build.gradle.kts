@@ -68,4 +68,6 @@ dependencies {
     implementation(libs.androidx.material.icon)
     // Splash Screen
     implementation(libs.androidx.splashscreen)
+    // DataStore Preferences
+    implementation(libs.datastore.preferences)
 }

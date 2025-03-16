@@ -1,6 +1,8 @@
 package com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen
 
-import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -9,27 +11,28 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContent
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.ScaffoldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Outline
-import androidx.compose.ui.graphics.PathEffect
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.samzuhalsetiawan.floss.domain.util.dummy.DummyData
+import com.samzuhalsetiawan.floss.presentation.common.component.alertbar.missingpermissionbar.MissingPermissionBar
+import com.samzuhalsetiawan.floss.presentation.common.component.alertdialog.permissionrationale.PermissionRationaleAlertDialog
+import com.samzuhalsetiawan.floss.presentation.common.util.getActivity
 import com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen.component.musiclist.MusicList
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 
@@ -37,12 +40,23 @@ import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 fun MusicListScreen(
    viewModel: MusicListScreenVM
 ) {
+   val context = LocalContext.current
    val state by viewModel.state.collectAsStateWithLifecycle()
+
+
+   LaunchedEffect(Unit) {
+      viewModel.onEvent(MusicListScreenEvent.OnChangePermissionStatus(checkPermissionStatus(context)))
+   }
 
    MusicListScreen(
       state = state,
       onEvent = viewModel::onEvent
    )
+//   for (alertDialog in state.alertDialogs) {
+//      when (alertDialog) {
+//
+//      }
+//   }
 }
 
 @Composable
@@ -50,6 +64,18 @@ private fun MusicListScreen(
    state: MusicListScreenState,
    onEvent: (MusicListScreenEvent) -> Unit
 ) {
+   val readMediaAudioPermissionLauncher = rememberLauncherForActivityResult(
+      contract = ActivityResultContracts.RequestPermission(),
+      onResult = { isGranted ->
+         if (isGranted) {
+            onEvent(MusicListScreenEvent.UpdateMusicList)
+            onEvent(MusicListScreenEvent.HideMissingPermissionBar)
+         } else {
+            onEvent(MusicListScreenEvent.ShowMissingPermissionBar)
+         }
+      }
+   )
+
    Scaffold(
       contentWindowInsets = WindowInsets(0,0,0,0)
    ) { scaffoldPadding ->
@@ -66,6 +92,25 @@ private fun MusicListScreen(
          } else {
             var currentMusicId by remember { mutableStateOf<String?>(null) }
 
+            if (state.showMissingPermissionBar) {
+               var expanded by remember { mutableStateOf(false) }
+
+               MissingPermissionBar(
+                  expanded = expanded,
+                  isFullDenied = state.permissionStatus == PermissionStatus.DENIED,
+                  description = "You don't give permission to us to read audio files in your device, So we can only read the audio files inside Ringtone folder",
+                  onExpandButtonClick = { expanded = !expanded },
+                  onActionButtonClick = {
+                     if (state.permissionStatus == PermissionStatus.HALF_DENIED) {
+                        readMediaAudioPermissionLauncher.launch(readAudiFilesPermission)
+                     }
+                  },
+                  onDismissRequest = {
+                     onEvent(MusicListScreenEvent.HideMissingPermissionBar)
+                     expanded = false
+                  },
+               )
+            }
             LazyColumn(
                modifier = Modifier.fillMaxSize()
             ) {
@@ -100,6 +145,30 @@ private fun MusicListScreen(
             }
          }
       }
+   }
+}
+
+private val readAudiFilesPermission =
+   if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      android.Manifest.permission.READ_MEDIA_AUDIO
+   } else {
+      android.Manifest.permission.READ_EXTERNAL_STORAGE
+   }
+
+private fun checkPermissionStatus(
+   context: Context,
+): PermissionStatus {
+   val activity = context.getActivity() ?: throw Exception("Activity not found")
+
+   val isReadAudioFilesPermissionGranted =
+      ContextCompat.checkSelfPermission(context, readAudiFilesPermission) == PackageManager.PERMISSION_GRANTED
+
+   val shouldShowRequestPermissionRationale = activity.shouldShowRequestPermissionRationale(readAudiFilesPermission)
+
+   return when {
+      isReadAudioFilesPermissionGranted -> PermissionStatus.GRANTED
+      shouldShowRequestPermissionRationale -> PermissionStatus.HALF_DENIED
+      else -> PermissionStatus.DENIED
    }
 }
 

@@ -2,17 +2,23 @@ package com.samzuhalsetiawan.floss.presentation.common.component.button.prevbutt
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.SkipPrevious
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.samzuhalsetiawan.floss.presentation.common.component.button.iconbutton.IconButton
 
 @Composable
 fun PrevButton(
-   modifier: Modifier = Modifier
+   modifier: Modifier = Modifier,
+   onClick: () -> Unit = {}
 ) {
    IconButton(
       modifier = modifier,
-      icon = Icons.Default.SkipPrevious,
-      contentDescription = null /* TODO: Add content description */
-   )
+      onClick = onClick
+   ) {
+      Icon(
+         imageVector = Icons.Default.SkipPrevious,
+         contentDescription = null /* TODO: Add content description */
+      )
+   }
 }
