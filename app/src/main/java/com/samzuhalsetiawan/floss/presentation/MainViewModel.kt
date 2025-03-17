@@ -5,6 +5,7 @@ import android.content.pm.PackageManager
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.session.MediaController
 import com.samzuhalsetiawan.floss.domain.preferences.Preferences
 import com.samzuhalsetiawan.floss.presentation.common.config.Config
 import com.samzuhalsetiawan.floss.presentation.navigation.Destination
@@ -19,23 +20,32 @@ class MainViewModel(
    private val preferences: Preferences
 ): ViewModel() {
 
-   private val _isAppReady = MutableStateFlow(false)
-   val isAppReady = _isAppReady.asStateFlow()
+   private val _state = MutableStateFlow(MainActivityState())
+   val state = _state.asStateFlow()
 
-   private val _startDestination = MutableStateFlow<Destination.Graph?>(null)
-   val startDestination = _startDestination.asStateFlow()
+   fun onEvent(event: MainActivityEvent) {
+      when (event) {
+         is MainActivityEvent.SetMediaController -> onSetMediaController(event.mediaController)
+      }
+   }
 
    init {
       viewModelScope.launch {
          val isFirstLaunch = preferences.isFirstLaunch.first()
-         _startDestination.update {
-            if (isFirstLaunch) {
-               Destination.Graph.Welcome
-            } else {
-               Destination.Graph.Main
-            }
+         val startDestination = if (isFirstLaunch) Destination.Graph.Welcome else Destination.Graph.Main
+         _state.update { currentState ->
+            currentState.copy(
+               isAppReady = true,
+               startDestination = startDestination
+            )
          }
-         _isAppReady.update { true }
       }
    }
+
+   private fun onSetMediaController(mediaController: MediaController) {
+      _state.update { currentState ->
+         currentState.copy(mediaController = mediaController)
+      }
+   }
+
 }

@@ -70,4 +70,7 @@ dependencies {
     implementation(libs.androidx.splashscreen)
     // DataStore Preferences
     implementation(libs.datastore.preferences)
+    // Media3
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.mediasession)
 }

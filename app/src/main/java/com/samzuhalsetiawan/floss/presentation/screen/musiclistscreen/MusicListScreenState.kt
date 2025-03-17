@@ -17,6 +17,8 @@ sealed class MusicListScreenEvent {
    data class ShowAlertDialog(val alertDialog: AlertDialog): MusicListScreenEvent()
    data class HideAlertDialog(val alertDialog: AlertDialog): MusicListScreenEvent()
    data class OnChangePermissionStatus(val permissionStatus: PermissionStatus): MusicListScreenEvent()
+   data class OnPlayButtonClick(val music: Music): MusicListScreenEvent()
+   data class OnPauseButtonClick(val music: Music): MusicListScreenEvent()
 }
 
 sealed class AlertDialog

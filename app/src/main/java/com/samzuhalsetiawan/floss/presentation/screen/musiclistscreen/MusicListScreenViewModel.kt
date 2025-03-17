@@ -2,16 +2,19 @@ package com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.media3.common.MediaItem
+import androidx.media3.session.MediaController
+import com.samzuhalsetiawan.floss.domain.model.Music
 import com.samzuhalsetiawan.floss.domain.repository.MusicRepository
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MusicListScreenVM(
-   private val musicRepository: MusicRepository
+class MusicListScreenViewModel(
+   private val musicRepository: MusicRepository,
+   private val mediaController: MediaController
 ): ViewModel() {
 
    private val _state = MutableStateFlow(MusicListScreenState())
@@ -25,7 +28,20 @@ class MusicListScreenVM(
          is MusicListScreenEvent.HideMissingPermissionBar -> onHideMissingPermissionBar()
          is MusicListScreenEvent.ShowMissingPermissionBar -> onShowMissingPermissionBar()
          is MusicListScreenEvent.OnChangePermissionStatus -> onChangePermissionStatus(event.permissionStatus)
+         is MusicListScreenEvent.OnPauseButtonClick -> onPauseButtonClick(event.music)
+         is MusicListScreenEvent.OnPlayButtonClick -> onPlayButtonClick(event.music)
       }
+   }
+
+   private fun onPauseButtonClick(music: Music) {
+      mediaController.pause()
+   }
+
+   private fun onPlayButtonClick(music: Music) {
+      val mediaItem = MediaItem.fromUri(music.uri)
+      mediaController.setMediaItem(mediaItem)
+      mediaController.prepare()
+      mediaController.play()
    }
 
    private fun onChangePermissionStatus(status: PermissionStatus) {

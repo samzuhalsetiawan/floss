@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.CircularProgressIndicator
@@ -31,14 +30,13 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.samzuhalsetiawan.floss.presentation.common.component.alertbar.missingpermissionbar.MissingPermissionBar
-import com.samzuhalsetiawan.floss.presentation.common.component.alertdialog.permissionrationale.PermissionRationaleAlertDialog
 import com.samzuhalsetiawan.floss.presentation.common.util.getActivity
 import com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen.component.musiclist.MusicList
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 
 @Composable
 fun MusicListScreen(
-   viewModel: MusicListScreenVM
+   viewModel: MusicListScreenViewModel
 ) {
    val context = LocalContext.current
    val state by viewModel.state.collectAsStateWithLifecycle()
@@ -130,6 +128,11 @@ private fun MusicListScreen(
                      expanded = it.id == currentMusicId,
                      music = it,
                      onPlayButtonClick = {
+                        if (it.id != currentMusicId) {
+                           onEvent(MusicListScreenEvent.OnPlayButtonClick(it))
+                        } else {
+                           onEvent(MusicListScreenEvent.OnPauseButtonClick(it))
+                        }
                         currentMusicId = if (currentMusicId == it.id) null else it.id
                      }
                   )
