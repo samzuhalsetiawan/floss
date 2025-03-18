@@ -12,11 +12,13 @@ import androidx.compose.ui.Modifier
 fun ShuffleButton(
    modifier: Modifier = Modifier,
    isShuffleOn: Boolean,
-   onClick: () -> Unit = {}
+   onClick: (Boolean) -> Unit
 ) {
    IconButton(
       modifier = modifier,
-      onClick = onClick
+      onClick = {
+         onClick(!isShuffleOn)
+      }
    ) {
       Icon(
          imageVector = Icons.Default.Shuffle,

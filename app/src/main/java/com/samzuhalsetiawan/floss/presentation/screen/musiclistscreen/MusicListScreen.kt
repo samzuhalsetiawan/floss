@@ -88,8 +88,6 @@ private fun MusicListScreen(
                CircularProgressIndicator()
             }
          } else {
-            var currentMusicId by remember { mutableStateOf<String?>(null) }
-
             if (state.showMissingPermissionBar) {
                var expanded by remember { mutableStateOf(false) }
 
@@ -119,25 +117,40 @@ private fun MusicListScreen(
                   MusicList(
                      modifier = Modifier
                         .then(
-                           if (it.id == currentMusicId) {
+                           if (it.id == state.currentMusic?.id) {
                               Modifier.padding(14.dp)
                            } else {
                               Modifier
                            }
                         ),
-                     expanded = it.id == currentMusicId,
+                     expanded = it.id == state.currentMusic?.id,
                      music = it,
+                     isShuffleOn = state.isShuffleModeActive,
+                     isPlaying = state.isPlaying,
+                     repeatMode = state.repeatMode,
                      onPlayButtonClick = {
-                        if (it.id != currentMusicId) {
-                           onEvent(MusicListScreenEvent.OnPlayButtonClick(it))
-                        } else {
-                           onEvent(MusicListScreenEvent.OnPauseButtonClick(it))
-                        }
-                        currentMusicId = if (currentMusicId == it.id) null else it.id
-                     }
+                        onEvent(MusicListScreenEvent.OnPlayButtonClick(it))
+                     },
+                     onPauseButtonClick = {
+                        onEvent(MusicListScreenEvent.OnPauseButtonClick)
+                     },
+                     onPrevButtonClick = {
+                        onEvent(MusicListScreenEvent.OnPrevButtonClick)
+                     },
+                     onNextButtonClick = {
+                        onEvent(MusicListScreenEvent.OnNextButtonClick)
+                     },
+                     onShuffleButtonClick = {
+                        onEvent(MusicListScreenEvent.OnShuffleButtonClick(it))
+                     },
+                     onRepeatButtonClick = {
+                        onEvent(MusicListScreenEvent.OnRepeatButtonClick(it))
+                     },
+                     onMoreOptionButtonClick = {},
+                     onFullscreenButtonClick = {}
                   )
                   AnimatedVisibility(
-                     visible = it.id != currentMusicId
+                     visible = it.id != state.currentMusic?.id
                   ) {
                      HorizontalDivider(
                         modifier = Modifier

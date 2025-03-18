@@ -19,11 +19,19 @@ enum class RepeatMode {
 fun RepeatButton(
    modifier: Modifier = Modifier,
    repeatMode: RepeatMode,
-   onClick: () -> Unit = {}
+   onClick: (RepeatMode) -> Unit
 ) {
    IconButton(
       modifier = modifier,
-      onClick = onClick
+      onClick = {
+         onClick(
+            when (repeatMode) {
+               RepeatMode.SINGLE -> RepeatMode.ALL
+               RepeatMode.ALL -> RepeatMode.OFF
+               RepeatMode.OFF -> RepeatMode.SINGLE
+            }
+         )
+      }
    ) {
       Icon(
          imageVector = when (repeatMode) {

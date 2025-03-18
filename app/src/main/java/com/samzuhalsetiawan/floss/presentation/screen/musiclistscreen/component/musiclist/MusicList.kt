@@ -32,6 +32,7 @@ import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbut
 import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatMode
 import com.samzuhalsetiawan.floss.presentation.common.component.button.shufflebutton.ShuffleButton
 import com.samzuhalsetiawan.floss.presentation.common.component.albumart.AlbumArtSmall
+import com.samzuhalsetiawan.floss.presentation.common.component.button.pausebutton.PauseButton
 import com.samzuhalsetiawan.floss.presentation.common.component.button.playbutton.PlayButton
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 
@@ -40,7 +41,17 @@ fun MusicList(
    modifier: Modifier = Modifier,
    expanded: Boolean,
    music: Music,
+   isPlaying: Boolean = false,
+   isShuffleOn: Boolean = false,
+   repeatMode: RepeatMode = RepeatMode.OFF,
    onPlayButtonClick: () -> Unit = {},
+   onPauseButtonClick: () -> Unit = {},
+   onPrevButtonClick: () -> Unit = {},
+   onNextButtonClick: () -> Unit = {},
+   onShuffleButtonClick: (Boolean) -> Unit = {},
+   onRepeatButtonClick: (RepeatMode) -> Unit = {},
+   onMoreOptionButtonClick: () -> Unit = {},
+   onFullscreenButtonClick: () -> Unit = {}
 ) {
    ElevatedCard(
       modifier = modifier
@@ -55,6 +66,9 @@ fun MusicList(
                )
             } else Modifier
          ),
+      onClick = {
+         if (!expanded) onPlayButtonClick()
+      },
       shape = if (expanded) CardDefaults.shape else RectangleShape,
       colors = if (expanded) CardDefaults.elevatedCardColors() else CardDefaults.outlinedCardColors(),
       elevation = if (expanded) CardDefaults.elevatedCardElevation() else CardDefaults.outlinedCardElevation()
@@ -95,7 +109,7 @@ fun MusicList(
                }
                if (expanded) {
                   IconButton(
-                     onClick = {}
+                     onClick = onFullscreenButtonClick
                   ) {
                      Icon(
                         imageVector = Icons.Default.Fullscreen,
@@ -104,7 +118,7 @@ fun MusicList(
                   }
                } else {
                   IconButton(
-                     onClick = onPlayButtonClick
+                     onClick = onMoreOptionButtonClick
                   ) {
                      Icon(
                         imageVector = Icons.Default.MoreVert,
@@ -128,11 +142,29 @@ fun MusicList(
                   horizontalArrangement = Arrangement.Center,
                   verticalAlignment = Alignment.CenterVertically
                ) {
-                  ShuffleButton(isShuffleOn = false)
-                  PrevButton()
-                  PlayButton(onClick = onPlayButtonClick)
-                  NextButton()
-                  RepeatButton(repeatMode = RepeatMode.OFF)
+                  ShuffleButton(
+                     isShuffleOn = isShuffleOn,
+                     onClick = { onShuffleButtonClick(it) }
+                  )
+                  PrevButton(
+                     onClick = onPrevButtonClick
+                  )
+                  if (isPlaying) {
+                     PauseButton(
+                        onClick = onPauseButtonClick
+                     )
+                  } else {
+                     PlayButton(
+                        onClick = onPlayButtonClick
+                     )
+                  }
+                  NextButton(
+                     onClick = onNextButtonClick
+                  )
+                  RepeatButton(
+                     repeatMode = repeatMode,
+                     onClick = { onRepeatButtonClick(it) }
+                  )
                }
             }
          }

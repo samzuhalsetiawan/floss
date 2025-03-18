@@ -67,11 +67,11 @@ fun ControlScreen() {
                .padding(horizontal = 14.dp),
             horizontalArrangement = Arrangement.SpaceBetween
          ) {
-            RepeatButton(repeatMode = RepeatMode.OFF)
+//            RepeatButton(repeatMode = RepeatMode.OFF)
             PrevButton()
             PlayButtonLarge()
             NextButton()
-            ShuffleButton(isShuffleOn = false)
+//            ShuffleButton(isShuffleOn = false)
          }
       }
    }

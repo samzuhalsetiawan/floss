@@ -3,9 +3,11 @@ package com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import com.samzuhalsetiawan.floss.domain.model.Music
 import com.samzuhalsetiawan.floss.domain.repository.MusicRepository
+import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatMode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +17,7 @@ import kotlinx.coroutines.launch
 class MusicListScreenViewModel(
    private val musicRepository: MusicRepository,
    private val mediaController: MediaController
-): ViewModel() {
+): ViewModel(), Player.Listener {
 
    private val _state = MutableStateFlow(MusicListScreenState())
    val state = _state.asStateFlow()
@@ -28,19 +30,81 @@ class MusicListScreenViewModel(
          is MusicListScreenEvent.HideMissingPermissionBar -> onHideMissingPermissionBar()
          is MusicListScreenEvent.ShowMissingPermissionBar -> onShowMissingPermissionBar()
          is MusicListScreenEvent.OnChangePermissionStatus -> onChangePermissionStatus(event.permissionStatus)
-         is MusicListScreenEvent.OnPauseButtonClick -> onPauseButtonClick(event.music)
+         is MusicListScreenEvent.OnPauseButtonClick -> onPauseButtonClick()
          is MusicListScreenEvent.OnPlayButtonClick -> onPlayButtonClick(event.music)
+         is MusicListScreenEvent.OnNextButtonClick -> onNextButtonClick()
+         is MusicListScreenEvent.OnPrevButtonClick -> onPrevButtonClick()
+         is MusicListScreenEvent.OnRepeatButtonClick -> onRepeatButtonClick(event.repeatMode)
+         is MusicListScreenEvent.OnShuffleButtonClick -> onShuffleButtonClick(event.isActive)
       }
    }
 
-   private fun onPauseButtonClick(music: Music) {
+   init {
+      getAllMusics()
+      mediaController.addListener(this)
+   }
+
+   override fun onIsPlayingChanged(isPlaying: Boolean) {
+      _state.update { currentState ->
+         currentState.copy(isPlaying = isPlaying)
+      }
+   }
+
+   override fun onRepeatModeChanged(repeatMode: Int) {
+      _state.update { currentState ->
+         currentState.copy(
+            repeatMode = when (repeatMode) {
+               Player.REPEAT_MODE_OFF -> RepeatMode.OFF
+               Player.REPEAT_MODE_ALL -> RepeatMode.ALL
+               Player.REPEAT_MODE_ONE -> RepeatMode.SINGLE
+               else -> throw Exception("Unknown repeat mode: $repeatMode")
+            }
+         )
+      }
+   }
+
+   override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+      _state.update { currentState ->
+         currentState.copy(isShuffleModeActive = shuffleModeEnabled)
+      }
+   }
+
+   private fun onShuffleButtonClick(isActive: Boolean) {
+      mediaController.shuffleModeEnabled = isActive
+   }
+
+   private fun onRepeatButtonClick(repeatMode: RepeatMode) {
+      mediaController.repeatMode = when (repeatMode) {
+         RepeatMode.OFF -> Player.REPEAT_MODE_OFF
+         RepeatMode.ALL -> Player.REPEAT_MODE_ALL
+         RepeatMode.SINGLE -> Player.REPEAT_MODE_ONE
+      }
+   }
+
+   private fun onPrevButtonClick() {
+      mediaController.seekToPrevious()
+   }
+
+   private fun onNextButtonClick() {
+      mediaController.seekToNext()
+   }
+
+   private fun onPauseButtonClick() {
       mediaController.pause()
    }
 
    private fun onPlayButtonClick(music: Music) {
+      if (_state.value.currentMusic == music) return resumeMusic()
+      _state.update { currentState ->
+         currentState.copy(currentMusic = music)
+      }
       val mediaItem = MediaItem.fromUri(music.uri)
       mediaController.setMediaItem(mediaItem)
       mediaController.prepare()
+      mediaController.play()
+   }
+
+   private fun resumeMusic() {
       mediaController.play()
    }
 
@@ -75,10 +139,6 @@ class MusicListScreenViewModel(
       _state.update {
          it.copy(alertDialogs = it.alertDialogs + alertDialog)
       }
-   }
-
-   init {
-      getAllMusics()
    }
 
    private fun getAllMusics() {
