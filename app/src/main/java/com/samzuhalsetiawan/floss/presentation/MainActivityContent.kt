@@ -8,14 +8,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.media3.session.MediaController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
-import com.samzuhalsetiawan.floss.domain.FlossApp
+import com.samzuhalsetiawan.floss.FlossApp
 import com.samzuhalsetiawan.floss.presentation.common.component.bottomnavigation.BottomNavigation
 import com.samzuhalsetiawan.floss.presentation.navigation.Destination
 import com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen.MusicListScreen
@@ -29,9 +28,10 @@ import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 
 fun MainActivity.setMainContent() {
    setContent {
-      val viewModel = viewModel<MainViewModel>(this) {
-         MainViewModel(
-            preferences = (application as FlossApp).modules.preferences
+      val viewModel = viewModel<MainActivityViewModel>(this) {
+         MainActivityViewModel(
+            getIsFirstLaunch = (application as FlossApp).useCasesModule.getIsFirstLaunch,
+            releasePlayerResources = (application as FlossApp).useCasesModule.releasePlayerResources
          )
       }
       val state by viewModel.state.collectAsStateWithLifecycle()
@@ -50,7 +50,6 @@ private fun MainActivity.MainContent(
    val navController = rememberNavController()
    val currentBackStackEntry by navController.currentBackStackEntryAsState()
    val startDestination = state.startDestination ?: return
-   val mediaController = state.mediaController ?: return
    FlossTheme {
       Scaffold(
          bottomBar = {
@@ -84,7 +83,7 @@ private fun MainActivity.MainContent(
                composable<Destination.Screen.PermissionRequestScreen> {
                   val vm = viewModel<PermissionRequestScreenViewModel> {
                      PermissionRequestScreenViewModel(
-                        preferences = (application as FlossApp).modules.preferences
+                        setIsFirstLaunch = (application as FlossApp).useCasesModule.setIsFirstLaunch
                      )
                   }
                   PermissionRequestScreen(
@@ -109,8 +108,8 @@ private fun MainActivity.MainContent(
                composable<Destination.Screen.MusicListScreen> {
                   val vm = viewModel<MusicListScreenViewModel> {
                      MusicListScreenViewModel(
-                        musicRepository = (application as FlossApp).modules.musicRepository,
-                        mediaController = mediaController
+                        getAllMusic = (application as FlossApp).useCasesModule.getAllMusic,
+                        playerUseCases = (application as FlossApp).useCasesModule.playerUseCases
                      )
                   }
                   MusicListScreen(vm)

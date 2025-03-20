@@ -1,44 +1,27 @@
 package com.samzuhalsetiawan.floss.presentation
 
-import android.content.ComponentName
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
-import androidx.core.content.ContextCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.viewModelFactory
-import androidx.media3.session.MediaController
-import androidx.media3.session.SessionToken
-import com.google.common.util.concurrent.ListenableFuture
-import com.samzuhalsetiawan.floss.domain.FlossApp
-import com.samzuhalsetiawan.floss.domain.service.BackgroundPlayerService
+import com.samzuhalsetiawan.floss.FlossApp
 
 class MainActivity : ComponentActivity() {
 
-   private val viewModel by viewModels<MainViewModel>(
+   private val viewModel by viewModels<MainActivityViewModel>(
       factoryProducer = {
          viewModelFactory {
-            addInitializer(clazz = MainViewModel::class) {
-               MainViewModel(
-                  preferences = (application as FlossApp).modules.preferences
+            addInitializer(clazz = MainActivityViewModel::class) {
+               MainActivityViewModel(
+                  getIsFirstLaunch = (application as FlossApp).useCasesModule.getIsFirstLaunch,
+                  releasePlayerResources = (application as FlossApp).useCasesModule.releasePlayerResources
                )
             }
          }
       }
    )
-
-   private lateinit var controllerFuture: ListenableFuture<MediaController>
-
-   override fun onStart() {
-      super.onStart()
-      val sessionToken = SessionToken(this, ComponentName(this, BackgroundPlayerService::class.java))
-      controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
-      controllerFuture.addListener({
-         val mediaController = controllerFuture.get()
-         viewModel.onEvent(MainActivityEvent.SetMediaController(mediaController))
-      }, ContextCompat.getMainExecutor(this))
-   }
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
@@ -49,7 +32,7 @@ class MainActivity : ComponentActivity() {
    }
 
    override fun onStop() {
-      MediaController.releaseFuture(controllerFuture)
+      viewModel.onEvent(MainActivityEvent.OnActivityDestroyed)
       super.onStop()
    }
 }

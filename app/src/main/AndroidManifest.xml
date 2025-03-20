@@ -10,7 +10,7 @@
 
     <application
         android:allowBackup="true"
-        android:name=".domain.FlossApp"
+        android:name=".FlossApp"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
         android:icon="@mipmap/ic_launcher"
@@ -30,7 +30,7 @@
             </intent-filter>
         </activity>
         <service
-            android:name=".domain.service.BackgroundPlayerService"
+            android:name=".data.service.BackgroundPlayerService"
             android:foregroundServiceType="mediaPlayback"
             android:exported="true"
             tools:ignore="ExportedService">

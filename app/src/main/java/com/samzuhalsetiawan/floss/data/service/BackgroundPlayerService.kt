@@ -1,4 +1,4 @@
-package com.samzuhalsetiawan.floss.domain.service
+package com.samzuhalsetiawan.floss.data.service
 
 import android.content.Intent
 import androidx.annotation.OptIn

@@ -23,7 +23,6 @@ import com.samzuhalsetiawan.floss.presentation.common.component.button.nextbutto
 import com.samzuhalsetiawan.floss.presentation.common.component.button.playbutton.PlayButtonLarge
 import com.samzuhalsetiawan.floss.presentation.common.component.button.prevbutton.PrevButton
 import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatButton
-import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatMode
 import com.samzuhalsetiawan.floss.presentation.common.component.button.shufflebutton.ShuffleButton
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 

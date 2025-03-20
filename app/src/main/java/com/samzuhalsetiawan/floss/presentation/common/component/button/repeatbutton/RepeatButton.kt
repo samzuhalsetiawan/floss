@@ -8,12 +8,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-
-enum class RepeatMode {
-   SINGLE,
-   ALL,
-   OFF
-}
+import com.samzuhalsetiawan.floss.domain.manager.PlayerManager.RepeatMode
 
 @Composable
 fun RepeatButton(
@@ -26,21 +21,21 @@ fun RepeatButton(
       onClick = {
          onClick(
             when (repeatMode) {
-               RepeatMode.SINGLE -> RepeatMode.ALL
-               RepeatMode.ALL -> RepeatMode.OFF
-               RepeatMode.OFF -> RepeatMode.SINGLE
+               RepeatMode.ONE -> RepeatMode.ALL
+               RepeatMode.ALL -> RepeatMode.NONE
+               RepeatMode.NONE -> RepeatMode.ONE
             }
          )
       }
    ) {
       Icon(
          imageVector = when (repeatMode) {
-            RepeatMode.SINGLE -> Icons.Default.RepeatOne
+            RepeatMode.ONE -> Icons.Default.RepeatOne
             RepeatMode.ALL -> Icons.Default.Repeat
-            RepeatMode.OFF -> Icons.Default.Repeat
+            RepeatMode.NONE -> Icons.Default.Repeat
          },
          contentDescription = null /* TODO: Add content description */,
-         tint = if (repeatMode == RepeatMode.OFF) {
+         tint = if (repeatMode == RepeatMode.NONE) {
             LocalContentColor.current.copy(alpha = 0.3f)
          } else {
             LocalContentColor.current

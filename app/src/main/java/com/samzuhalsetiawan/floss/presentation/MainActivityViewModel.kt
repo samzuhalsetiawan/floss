@@ -1,23 +1,18 @@
 package com.samzuhalsetiawan.floss.presentation
 
-import android.content.Context
-import android.content.pm.PackageManager
-import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.session.MediaController
-import com.samzuhalsetiawan.floss.domain.preferences.Preferences
-import com.samzuhalsetiawan.floss.presentation.common.config.Config
+import com.samzuhalsetiawan.floss.domain.usecase.GetIsFirstLaunch
+import com.samzuhalsetiawan.floss.domain.usecase.playerusecase.ReleasePlayerResources
 import com.samzuhalsetiawan.floss.presentation.navigation.Destination
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.reflect.KClass
 
-class MainViewModel(
-   private val preferences: Preferences
+class MainActivityViewModel(
+   private val getIsFirstLaunch: GetIsFirstLaunch,
+   private val releasePlayerResources: ReleasePlayerResources
 ): ViewModel() {
 
    private val _state = MutableStateFlow(MainActivityState())
@@ -25,13 +20,17 @@ class MainViewModel(
 
    fun onEvent(event: MainActivityEvent) {
       when (event) {
-         is MainActivityEvent.SetMediaController -> onSetMediaController(event.mediaController)
+         MainActivityEvent.OnActivityDestroyed -> onActivityDestroyed()
       }
+   }
+
+   private fun onActivityDestroyed() {
+      releasePlayerResources()
    }
 
    init {
       viewModelScope.launch {
-         val isFirstLaunch = preferences.isFirstLaunch.first()
+         val isFirstLaunch = getIsFirstLaunch()
          val startDestination = if (isFirstLaunch) Destination.Graph.Welcome else Destination.Graph.Main
          _state.update { currentState ->
             currentState.copy(
@@ -41,11 +40,4 @@ class MainViewModel(
          }
       }
    }
-
-   private fun onSetMediaController(mediaController: MediaController) {
-      _state.update { currentState ->
-         currentState.copy(mediaController = mediaController)
-      }
-   }
-
 }

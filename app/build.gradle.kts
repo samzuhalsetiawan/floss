@@ -73,4 +73,6 @@ dependencies {
     // Media3
     implementation(libs.media3.exoplayer)
     implementation(libs.media3.mediasession)
+    // Coroutines Guava
+    implementation(libs.kotlinx.coroutines.guava)
 }

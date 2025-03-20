@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.samzuhalsetiawan.floss.domain.manager.PlayerManager.RepeatMode
 import com.samzuhalsetiawan.floss.domain.model.Music
 import com.samzuhalsetiawan.floss.presentation.common.component.text.normaltext.NormalText
 import com.samzuhalsetiawan.floss.presentation.common.component.text.subtext.SubText
@@ -29,7 +30,6 @@ import com.samzuhalsetiawan.floss.presentation.common.component.musicprogressbar
 import com.samzuhalsetiawan.floss.presentation.common.component.button.nextbutton.NextButton
 import com.samzuhalsetiawan.floss.presentation.common.component.button.prevbutton.PrevButton
 import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatButton
-import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatMode
 import com.samzuhalsetiawan.floss.presentation.common.component.button.shufflebutton.ShuffleButton
 import com.samzuhalsetiawan.floss.presentation.common.component.albumart.AlbumArtSmall
 import com.samzuhalsetiawan.floss.presentation.common.component.button.pausebutton.PauseButton
@@ -43,7 +43,7 @@ fun MusicList(
    music: Music,
    isPlaying: Boolean = false,
    isShuffleOn: Boolean = false,
-   repeatMode: RepeatMode = RepeatMode.OFF,
+   repeatMode: RepeatMode = RepeatMode.NONE,
    onPlayButtonClick: () -> Unit = {},
    onPauseButtonClick: () -> Unit = {},
    onPrevButtonClick: () -> Unit = {},
@@ -186,7 +186,7 @@ private fun MusicListPreview() {
          music = Music(
             id = "1",
             title = "Title",
-            uri = Uri.EMPTY,
+            uri = "",
             displayName = "Display Name",
             relativePath = "Relative Path",
             data = "Data"

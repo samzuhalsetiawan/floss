@@ -1,7 +1,7 @@
 package com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen
 
+import com.samzuhalsetiawan.floss.domain.manager.PlayerManager.RepeatMode
 import com.samzuhalsetiawan.floss.domain.model.Music
-import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatMode
 
 data class MusicListScreenState(
    val isLoading: Boolean = true,
@@ -9,26 +9,11 @@ data class MusicListScreenState(
    val currentMusic: Music? = null,
    val isPlaying: Boolean = false,
    val isShuffleModeActive: Boolean = false,
-   val repeatMode: RepeatMode = RepeatMode.OFF,
+   val repeatMode: RepeatMode = RepeatMode.NONE,
    val showMissingPermissionBar: Boolean = false,
    val permissionStatus: PermissionStatus = PermissionStatus.GRANTED,
    val alertDialogs: List<AlertDialog> = emptyList()
 )
-
-sealed class MusicListScreenEvent {
-   data object UpdateMusicList: MusicListScreenEvent()
-   data object  ShowMissingPermissionBar: MusicListScreenEvent()
-   data object HideMissingPermissionBar: MusicListScreenEvent()
-   data class ShowAlertDialog(val alertDialog: AlertDialog): MusicListScreenEvent()
-   data class HideAlertDialog(val alertDialog: AlertDialog): MusicListScreenEvent()
-   data class OnChangePermissionStatus(val permissionStatus: PermissionStatus): MusicListScreenEvent()
-   data class OnPlayButtonClick(val music: Music): MusicListScreenEvent()
-   data object OnPauseButtonClick: MusicListScreenEvent()
-   data object OnNextButtonClick: MusicListScreenEvent()
-   data object OnPrevButtonClick: MusicListScreenEvent()
-   data class OnShuffleButtonClick(val isActive: Boolean): MusicListScreenEvent()
-   data class OnRepeatButtonClick(val repeatMode: RepeatMode): MusicListScreenEvent()
-}
 
 sealed class AlertDialog
 

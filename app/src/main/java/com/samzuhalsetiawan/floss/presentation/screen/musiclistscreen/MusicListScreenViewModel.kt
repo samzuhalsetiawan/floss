@@ -4,20 +4,24 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
-import androidx.media3.session.MediaController
+import com.samzuhalsetiawan.floss.domain.GetAllMusicError
+import com.samzuhalsetiawan.floss.domain.Result
+import com.samzuhalsetiawan.floss.domain.manager.PlayerManager.RepeatMode
 import com.samzuhalsetiawan.floss.domain.model.Music
-import com.samzuhalsetiawan.floss.domain.repository.MusicRepository
-import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatMode
+import com.samzuhalsetiawan.floss.domain.usecase.GetAllMusic
+import com.samzuhalsetiawan.floss.domain.usecase.playerusecase.PlayerUseCases
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 class MusicListScreenViewModel(
-   private val musicRepository: MusicRepository,
-   private val mediaController: MediaController
-): ViewModel(), Player.Listener {
+   private val getAllMusic: GetAllMusic,
+   private val playerUseCases: PlayerUseCases
+): ViewModel() {
 
    private val _state = MutableStateFlow(MusicListScreenState())
    val state = _state.asStateFlow()
@@ -40,72 +44,65 @@ class MusicListScreenViewModel(
    }
 
    init {
-      getAllMusics()
-      mediaController.addListener(this)
-   }
-
-   override fun onIsPlayingChanged(isPlaying: Boolean) {
-      _state.update { currentState ->
-         currentState.copy(isPlaying = isPlaying)
+      getMusics()
+      viewModelScope.launch {
+         registerPlayerListener()
       }
    }
 
-   override fun onRepeatModeChanged(repeatMode: Int) {
-      _state.update { currentState ->
-         currentState.copy(
-            repeatMode = when (repeatMode) {
-               Player.REPEAT_MODE_OFF -> RepeatMode.OFF
-               Player.REPEAT_MODE_ALL -> RepeatMode.ALL
-               Player.REPEAT_MODE_ONE -> RepeatMode.SINGLE
-               else -> throw Exception("Unknown repeat mode: $repeatMode")
+   suspend fun registerPlayerListener() = supervisorScope {
+      launch {
+         playerUseCases.getIsPlayingFlow().collect {
+            _state.update { currentState ->
+               currentState.copy(isPlaying = it)
             }
-         )
+         }
       }
-   }
-
-   override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-      _state.update { currentState ->
-         currentState.copy(isShuffleModeActive = shuffleModeEnabled)
+      launch {
+         playerUseCases.getCurrentMusicFlow().collect {
+            _state.update { currentState ->
+               currentState.copy(currentMusic = it)
+            }
+         }
+      }
+      launch {
+         playerUseCases.getRepeatModeFlow().collect {
+            _state.update { currentState ->
+               currentState.copy(repeatMode = it)
+            }
+         }
+      }
+      launch {
+         playerUseCases.getShuffleModeEnabledFlow().collect {
+            _state.update { currentState ->
+               currentState.copy(isShuffleModeActive = it)
+            }
+         }
       }
    }
 
    private fun onShuffleButtonClick(isActive: Boolean) {
-      mediaController.shuffleModeEnabled = isActive
+      playerUseCases.setShuffleModeEnabled(isActive)
    }
 
    private fun onRepeatButtonClick(repeatMode: RepeatMode) {
-      mediaController.repeatMode = when (repeatMode) {
-         RepeatMode.OFF -> Player.REPEAT_MODE_OFF
-         RepeatMode.ALL -> Player.REPEAT_MODE_ALL
-         RepeatMode.SINGLE -> Player.REPEAT_MODE_ONE
-      }
+      playerUseCases.setRepeatMode(repeatMode)
    }
 
    private fun onPrevButtonClick() {
-      mediaController.seekToPrevious()
+      playerUseCases.playPreviousMusic()
    }
 
    private fun onNextButtonClick() {
-      mediaController.seekToNext()
+      playerUseCases.playNextMusic()
    }
 
    private fun onPauseButtonClick() {
-      mediaController.pause()
+      playerUseCases.pauseMusic()
    }
 
    private fun onPlayButtonClick(music: Music) {
-      if (_state.value.currentMusic == music) return resumeMusic()
-      _state.update { currentState ->
-         currentState.copy(currentMusic = music)
-      }
-      val mediaItem = MediaItem.fromUri(music.uri)
-      mediaController.setMediaItem(mediaItem)
-      mediaController.prepare()
-      mediaController.play()
-   }
-
-   private fun resumeMusic() {
-      mediaController.play()
+      playerUseCases.playMusic(music)
    }
 
    private fun onChangePermissionStatus(status: PermissionStatus) {
@@ -126,7 +123,7 @@ class MusicListScreenViewModel(
    }
 
    private fun onUpdateMusicList() {
-      getAllMusics()
+      getMusics()
    }
 
    private fun onHideAlertDialog(alertDialog: AlertDialog) {
@@ -141,16 +138,22 @@ class MusicListScreenViewModel(
       }
    }
 
-   private fun getAllMusics() {
+   private fun getMusics() {
       viewModelScope.launch(Dispatchers.IO) {
          _state.update { it.copy(isLoading = true) }
-         musicRepository.getAllMusics()
-            .onSuccess { musics ->
+         val result = getAllMusic()
+         when (result) {
+            is Result.Success -> {
                _state.update {
-                  it.copy(isLoading = false, musics = musics)
+                  it.copy(isLoading = false, musics = result.data)
                }
             }
-            .onFailure { throw it }
+            is Result.Failed -> {
+               when (result.error) {
+                  GetAllMusicError.NOT_ALLOWED_TO_READ_USER_MEDIA_AUDIO -> TODO("Request Permission")
+               }
+            }
+         }
       }
    }
 
