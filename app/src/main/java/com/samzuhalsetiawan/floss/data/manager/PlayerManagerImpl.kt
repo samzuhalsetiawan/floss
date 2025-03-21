@@ -14,8 +14,10 @@ import com.samzuhalsetiawan.floss.domain.model.Music
 import androidx.core.net.toUri
 import com.samzuhalsetiawan.floss.data.manager.util.toMedia3RepeatMode
 import com.samzuhalsetiawan.floss.data.manager.util.toRepeatMode
-import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 
 class PlayerManagerImpl(
    private val applicationContext: Context
@@ -29,13 +31,13 @@ class PlayerManagerImpl(
    private val player: Player
       get() = requireNotNull(mediaController)
 
-   private val _isPlayingFlow = MutableSharedFlow<Boolean>()
+   private val _isPlaying = MutableStateFlow<Boolean>(false)
 
-   private val _shuffleEnabledFlow = MutableSharedFlow<Boolean>()
+   private val _shuffleEnabled = MutableStateFlow<Boolean>(false)
 
-   private val _currentMusicFlow = MutableSharedFlow<Music?>()
+   private val _currentMusic = MutableStateFlow<Music?>(null)
 
-   private val _repeatModeFlow = MutableSharedFlow<PlayerManager.RepeatMode>()
+   private val _repeatMode = MutableStateFlow<PlayerManager.RepeatMode>(PlayerManager.RepeatMode.NONE)
 
    init {
       val sessionToken = SessionToken(applicationContext, ComponentName(applicationContext, BackgroundPlayerService::class.java))
@@ -46,8 +48,8 @@ class PlayerManagerImpl(
    }
 
    override fun play(music: Music) {
-      val currentMusic = player.currentMediaItem?.localConfiguration?.tag as? Music
-      if (currentMusic == music) return resume()
+      val currentMusicId = player.currentMediaItem?.mediaId
+      if (currentMusicId == music.id) return resume()
       val mediaItem = MediaItem.Builder()
          .setUri(music.uri.toUri())
          .setMediaId(music.id)
@@ -78,52 +80,40 @@ class PlayerManagerImpl(
       player.seekToPrevious()
    }
 
-   override val isPlaying: Boolean
-      get() = player.isPlaying
-
-   override val isPlayingFlow: SharedFlow<Boolean>
-      get() = _isPlayingFlow
+   override val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
 
    override fun onIsPlayingChanged(isPlaying: Boolean) {
-      _isPlayingFlow.tryEmit(isPlaying)
+      _isPlaying.update { isPlaying }
    }
 
-   override var shuffleEnabled: Boolean
-      get() = player.shuffleModeEnabled
-      set(value) {
-         player.shuffleModeEnabled = value
-      }
+   override val shuffleEnabled: StateFlow<Boolean> = _shuffleEnabled.asStateFlow()
 
-   override val shuffleEnabledFlow: SharedFlow<Boolean>
-      get() = _shuffleEnabledFlow
+   override fun setShuffleEnabled(shuffleEnabled: Boolean) {
+      player.shuffleModeEnabled = shuffleEnabled
+   }
 
    override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
-      _shuffleEnabledFlow.tryEmit(shuffleModeEnabled)
+      _shuffleEnabled.update { shuffleModeEnabled }
    }
 
-   override val currentMusic: Music?
-      get() {
-         val mediaItem = player.currentMediaItem ?: return null
-         return mediaItem.localConfiguration?.tag as? Music
-      }
-
-   override val currentMusicFlow: SharedFlow<Music?>
-      get() = _currentMusicFlow
+   override val currentMusic: StateFlow<Music?> = _currentMusic.asStateFlow()
 
    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      _currentMusicFlow.tryEmit(mediaItem?.localConfiguration?.tag as? Music)
+      // somehow this trigger twice when mediaItem change
+      // and for the second one doesn't contain localConfiguration event though mediaItem is not null
+      // so i decide to ignore the second event by return if localConfiguration is null
+      if (mediaItem == null) return _currentMusic.update { null }
+      val music = mediaItem.localConfiguration?.tag as? Music ?: return
+      _currentMusic.update { music }
    }
 
-   override var repeatMode: PlayerManager.RepeatMode
-      get() = player.repeatMode.toRepeatMode()
-      set(value) {
-         player.repeatMode = value.toMedia3RepeatMode()
-      }
+   override val repeatMode: StateFlow<PlayerManager.RepeatMode> = _repeatMode.asStateFlow()
 
-   override val repeatModeFlow: SharedFlow<PlayerManager.RepeatMode>
-      get() = _repeatModeFlow
+   override fun setRepeatMode(repeatMode: PlayerManager.RepeatMode) {
+      player.repeatMode = repeatMode.toMedia3RepeatMode()
+   }
 
    override fun onRepeatModeChanged(repeatMode: Int) {
-      _repeatModeFlow.tryEmit(repeatMode.toRepeatMode())
+      _repeatMode.update { repeatMode.toRepeatMode() }
    }
 }

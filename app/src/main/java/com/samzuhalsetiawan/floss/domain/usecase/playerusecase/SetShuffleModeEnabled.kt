@@ -6,6 +6,6 @@ class SetShuffleModeEnabled(
    private val playerManager: PlayerManager
 ) {
    operator fun invoke(shuffleEnabled: Boolean) {
-      playerManager.shuffleEnabled = shuffleEnabled
+      playerManager.setShuffleEnabled(shuffleEnabled)
    }
 }

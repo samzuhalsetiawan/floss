@@ -5,7 +5,6 @@ import com.samzuhalsetiawan.floss.domain.manager.PlayerManager
 class PlayerUseCases(
    private val playerManager: PlayerManager
 ) {
-   val getCurrentPlayerState = GetCurrentPlayerState(playerManager)
    val getCurrentMusicFlow = GetCurrentMusicFlow(playerManager)
    val getIsPlayingFlow = GetIsPlayingFlow(playerManager)
    val getRepeatModeFlow = GetRepeatModeFlow(playerManager)

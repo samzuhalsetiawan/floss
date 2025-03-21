@@ -6,6 +6,6 @@ class SetRepeatMode(
    private val playerManager: PlayerManager
 ) {
    operator fun invoke(repeatMode: PlayerManager.RepeatMode) {
-      playerManager.repeatMode = repeatMode
+      playerManager.setRepeatMode(repeatMode)
    }
 }
