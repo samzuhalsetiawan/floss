@@ -30,6 +30,7 @@ import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.samzuhalsetiawan.floss.presentation.common.component.alertbar.missingpermissionbar.MissingPermissionBar
+import com.samzuhalsetiawan.floss.presentation.common.util.asBitmap
 import com.samzuhalsetiawan.floss.presentation.common.util.getActivity
 import com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen.component.musiclist.MusicList
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
@@ -40,7 +41,6 @@ fun MusicListScreen(
 ) {
    val context = LocalContext.current
    val state by viewModel.state.collectAsStateWithLifecycle()
-
 
    LaunchedEffect(Unit) {
       viewModel.onEvent(MusicListScreenEvent.OnChangePermissionStatus(checkPermissionStatus(context)))
@@ -113,23 +113,29 @@ private fun MusicListScreen(
                items(
                   items = state.musics,
                   key = { music -> music.id },
-               ) {
+               ) { music ->
                   MusicList(
                      modifier = Modifier
                         .then(
-                           if (it.id == state.currentMusic?.id) {
+                           if (music.id == state.currentMusic?.id) {
                               Modifier.padding(14.dp)
                            } else {
                               Modifier
                            }
                         ),
-                     expanded = it.id == state.currentMusic?.id,
-                     music = it,
+                     expanded = music.id == state.currentMusic?.id,
+                     music = music,
                      isShuffleOn = state.isShuffleModeActive,
                      isPlaying = state.isPlaying,
                      repeatMode = state.repeatMode,
                      onPlayButtonClick = {
-                        onEvent(MusicListScreenEvent.OnPlayButtonClick(it))
+                        if (music.id != state.currentMusic?.id) {
+                           onEvent(MusicListScreenEvent.OnPlayButtonClick(music))
+                        } else {
+                           if (!state.isPlaying) {
+                              onEvent(MusicListScreenEvent.OnResumeButtonClick)
+                           }
+                        }
                      },
                      onPauseButtonClick = {
                         onEvent(MusicListScreenEvent.OnPauseButtonClick)
@@ -150,7 +156,7 @@ private fun MusicListScreen(
                      onFullscreenButtonClick = {}
                   )
                   AnimatedVisibility(
-                     visible = it.id != state.currentMusic?.id
+                     visible = music.id != state.currentMusic?.id
                   ) {
                      HorizontalDivider(
                         modifier = Modifier

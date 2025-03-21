@@ -1,5 +1,6 @@
 package com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen.component.musiclist
 
+import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +24,6 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.samzuhalsetiawan.floss.domain.manager.PlayerManager.RepeatMode
-import com.samzuhalsetiawan.floss.domain.model.Music
 import com.samzuhalsetiawan.floss.presentation.common.component.text.normaltext.NormalText
 import com.samzuhalsetiawan.floss.presentation.common.component.text.subtext.SubText
 import com.samzuhalsetiawan.floss.presentation.common.component.musicprogressbar.MusicProgressBar
@@ -34,6 +34,7 @@ import com.samzuhalsetiawan.floss.presentation.common.component.button.shufflebu
 import com.samzuhalsetiawan.floss.presentation.common.component.albumart.AlbumArtSmall
 import com.samzuhalsetiawan.floss.presentation.common.component.button.pausebutton.PauseButton
 import com.samzuhalsetiawan.floss.presentation.common.component.button.playbutton.PlayButton
+import com.samzuhalsetiawan.floss.presentation.common.model.Music
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 
 @Composable
@@ -83,7 +84,8 @@ fun MusicList(
          AlbumArtSmall(
             modifier = Modifier
                .padding(start = 12.dp)
-               .size(if (expanded) 84.dp else 48.dp)
+               .size(if (expanded) 84.dp else 48.dp),
+            albumArt = music.albumArt
          )
          Column(
             verticalArrangement = Arrangement.Center
@@ -186,10 +188,9 @@ private fun MusicListPreview() {
          music = Music(
             id = "1",
             title = "Title",
-            uri = "",
+            uri = Uri.EMPTY,
             displayName = "Display Name",
-            relativePath = "Relative Path",
-            data = "Data"
+            albumArt = null
          ),
       )
    }

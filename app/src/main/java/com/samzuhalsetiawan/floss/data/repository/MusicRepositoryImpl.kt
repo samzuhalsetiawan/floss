@@ -2,6 +2,8 @@ package com.samzuhalsetiawan.floss.data.repository
 
 import android.content.ContentUris
 import android.content.Context
+import android.media.MediaMetadataRetriever
+import android.net.Uri
 import android.provider.MediaStore
 import com.samzuhalsetiawan.floss.domain.model.Music
 import com.samzuhalsetiawan.floss.domain.repository.MusicRepository
@@ -38,16 +40,24 @@ class MusicRepositoryImpl(
          val displayNameColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DISPLAY_NAME)
          val relativePathColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.RELATIVE_PATH)
          val dataColumn = cursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.DATA)
+         val mediaMetadataRetriever = MediaMetadataRetriever()
          while (cursor.moveToNext()) {
             val id = cursor.getLong(idColumn)
-            val title = cursor.getString(titleColumn)
             val uri = ContentUris.withAppendedId(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, id)
-            val displayName = cursor.getString(displayNameColumn)
-            val relativePath = cursor.getString(relativePathColumn)
-            val data = cursor.getString(dataColumn)
-            musics.add(Music(id.toString(), title, uri.toString(), displayName, relativePath, data))
+            mediaMetadataRetriever.setDataSource(applicationContext, uri)
+            musics.add(
+               Music(
+                  id = id.toString(),
+                  title = cursor.getString(titleColumn),
+                  uri = uri.toString(),
+                  displayName = cursor.getString(displayNameColumn),
+                  relativePath = cursor.getString(relativePathColumn),
+                  data = cursor.getString(dataColumn),
+                  albumArt = mediaMetadataRetriever.embeddedPicture,
+               )
+            )
          }
-         musics
+         musics.also { mediaMetadataRetriever.release() }
       } ?: throw Exception("Expecting a cursor but null is returned.")
    }
 }

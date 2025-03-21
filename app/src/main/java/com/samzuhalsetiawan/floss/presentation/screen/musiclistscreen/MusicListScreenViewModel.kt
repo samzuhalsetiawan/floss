@@ -2,26 +2,34 @@ package com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.media3.common.MediaItem
-import androidx.media3.common.Player
 import com.samzuhalsetiawan.floss.domain.GetAllMusicError
 import com.samzuhalsetiawan.floss.domain.Result
 import com.samzuhalsetiawan.floss.domain.manager.PlayerManager.RepeatMode
-import com.samzuhalsetiawan.floss.domain.model.Music
 import com.samzuhalsetiawan.floss.domain.usecase.GetAllMusic
 import com.samzuhalsetiawan.floss.domain.usecase.playerusecase.PlayerUseCases
+import com.samzuhalsetiawan.floss.presentation.common.model.Music
+import com.samzuhalsetiawan.floss.presentation.common.util.toMusic
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
+import kotlin.coroutines.coroutineContext
+
+private typealias RawMusic = com.samzuhalsetiawan.floss.domain.model.Music
 
 class MusicListScreenViewModel(
    private val getAllMusic: GetAllMusic,
    private val playerUseCases: PlayerUseCases
 ): ViewModel() {
+
+   private val _rawMusics = MutableStateFlow<List<RawMusic>>(emptyList())
 
    private val _state = MutableStateFlow(MusicListScreenState())
    val state = _state.asStateFlow()
@@ -40,17 +48,30 @@ class MusicListScreenViewModel(
          is MusicListScreenEvent.OnPrevButtonClick -> onPrevButtonClick()
          is MusicListScreenEvent.OnRepeatButtonClick -> onRepeatButtonClick(event.repeatMode)
          is MusicListScreenEvent.OnShuffleButtonClick -> onShuffleButtonClick(event.isActive)
+         is MusicListScreenEvent.OnResumeButtonClick -> onResumeButtonClick()
       }
    }
+
 
    init {
-      getMusics()
       viewModelScope.launch {
+         _state.update { it.copy(isLoading = true) }
+         getMusics()
          registerPlayerListener()
+         _state.update { it.copy(isLoading = false) }
+      }
+      viewModelScope.launch {
+         _rawMusics.collect {
+            _state.update { currentState ->
+               currentState.copy(
+                  musics = it.map { rawMusic -> rawMusic.toMusic() }
+               )
+            }
+         }
       }
    }
 
-   suspend fun registerPlayerListener() = supervisorScope {
+   suspend fun registerPlayerListener() = CoroutineScope(coroutineContext).launch {
       launch {
          playerUseCases.getIsPlayingFlow().collect {
             _state.update { currentState ->
@@ -59,9 +80,10 @@ class MusicListScreenViewModel(
          }
       }
       launch {
-         playerUseCases.getCurrentMusicFlow().collect {
+         playerUseCases.getCurrentMusicIdFlow().collect { musicId ->
+            val music = _state.value.musics.find { it.id == musicId }
             _state.update { currentState ->
-               currentState.copy(currentMusic = it)
+               currentState.copy(currentMusic = music)
             }
          }
       }
@@ -101,8 +123,14 @@ class MusicListScreenViewModel(
       playerUseCases.pauseMusic()
    }
 
+   private fun onResumeButtonClick() {
+      playerUseCases.resumeMusic()
+   }
+
    private fun onPlayButtonClick(music: Music) {
-      playerUseCases.playMusic(music)
+      val playlist = _rawMusics.value
+      val musicIndex = playlist.indexOfFirst { it.id == music.id }
+      playerUseCases.playPlaylist(playlist, musicIndex)
    }
 
    private fun onChangePermissionStatus(status: PermissionStatus) {
@@ -123,7 +151,11 @@ class MusicListScreenViewModel(
    }
 
    private fun onUpdateMusicList() {
-      getMusics()
+      viewModelScope.launch {
+         _state.update { it.copy(isLoading = true) }
+         getMusics()
+         _state.update { it.copy(isLoading = false) }
+      }
    }
 
    private fun onHideAlertDialog(alertDialog: AlertDialog) {
@@ -138,15 +170,12 @@ class MusicListScreenViewModel(
       }
    }
 
-   private fun getMusics() {
-      viewModelScope.launch(Dispatchers.IO) {
-         _state.update { it.copy(isLoading = true) }
+   private suspend fun getMusics() {
+      withContext(Dispatchers.IO) {
          val result = getAllMusic()
          when (result) {
             is Result.Success -> {
-               _state.update {
-                  it.copy(isLoading = false, musics = result.data)
-               }
+               _rawMusics.update { result.data }
             }
             is Result.Failed -> {
                when (result.error) {

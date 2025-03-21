@@ -8,6 +8,10 @@ interface PlayerManager {
 
    fun play(music: Music)
 
+   fun play(musics: List<Music>, startPosition: Int)
+
+   fun resume()
+
    fun pause()
 
    fun next()
@@ -20,7 +24,7 @@ interface PlayerManager {
 
    fun setShuffleEnabled(shuffleEnabled: Boolean)
 
-   val currentMusic: StateFlow<Music?>
+   val currentMusicId: StateFlow<String?>
 
    val repeatMode: StateFlow<RepeatMode>
 

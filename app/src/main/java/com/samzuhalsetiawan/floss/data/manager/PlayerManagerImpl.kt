@@ -23,10 +23,10 @@ class PlayerManagerImpl(
    private val applicationContext: Context
 ): PlayerManager, Player.Listener {
 
-   private var mediaControllerFuture: ListenableFuture<MediaController>
+   private var mediaControllerFuture: ListenableFuture<MediaController>? = null
 
    private val mediaController: MediaController?
-      get() = if (mediaControllerFuture.isDone) mediaControllerFuture.get() else null
+      get() = mediaControllerFuture?.let { if (it.isDone) it.get() else null }
 
    private val player: Player
       get() = requireNotNull(mediaController)
@@ -35,36 +35,54 @@ class PlayerManagerImpl(
 
    private val _shuffleEnabled = MutableStateFlow<Boolean>(false)
 
-   private val _currentMusic = MutableStateFlow<Music?>(null)
+   private val _currentMusicId = MutableStateFlow<String?>(null)
 
    private val _repeatMode = MutableStateFlow<PlayerManager.RepeatMode>(PlayerManager.RepeatMode.NONE)
 
    init {
+      initializeMediaController()
+   }
+
+   private fun initializeMediaController() {
       val sessionToken = SessionToken(applicationContext, ComponentName(applicationContext, BackgroundPlayerService::class.java))
-      mediaControllerFuture = MediaController.Builder(applicationContext, sessionToken).buildAsync()
-      mediaControllerFuture.addListener({
-         player.addListener(this)
-      }, MoreExecutors.directExecutor())
+      mediaControllerFuture = MediaController.Builder(applicationContext, sessionToken)
+         .buildAsync()
+         .also {
+            it.addListener(
+               { player.addListener(this) },
+               MoreExecutors.directExecutor()
+            )
+         }
+   }
+
+   override fun destroy() {
+      mediaControllerFuture?.let { MediaController.releaseFuture(it) }
+      mediaControllerFuture = null
    }
 
    override fun play(music: Music) {
-      val currentMusicId = player.currentMediaItem?.mediaId
-      if (currentMusicId == music.id) return resume()
       val mediaItem = MediaItem.Builder()
          .setUri(music.uri.toUri())
          .setMediaId(music.id)
-         .setTag(music)
          .build()
       player.setMediaItem(mediaItem)
       player.prepare()
       player.play()
    }
 
-   override fun destroy() {
-      MediaController.releaseFuture(mediaControllerFuture)
+   override fun play(musics: List<Music>, startPosition: Int) {
+      val mediaItems = musics.map {
+         MediaItem.Builder()
+            .setUri(it.uri.toUri())
+            .setMediaId(it.id)
+            .build()
+      }
+      player.setMediaItems(mediaItems, startPosition, 0)
+      player.prepare()
+      player.play()
    }
 
-   private fun resume() {
+   override fun resume() {
       player.play()
    }
 
@@ -96,15 +114,11 @@ class PlayerManagerImpl(
       _shuffleEnabled.update { shuffleModeEnabled }
    }
 
-   override val currentMusic: StateFlow<Music?> = _currentMusic.asStateFlow()
+   override val currentMusicId: StateFlow<String?> = _currentMusicId.asStateFlow()
 
    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
-      // somehow this trigger twice when mediaItem change
-      // and for the second one doesn't contain localConfiguration event though mediaItem is not null
-      // so i decide to ignore the second event by return if localConfiguration is null
-      if (mediaItem == null) return _currentMusic.update { null }
-      val music = mediaItem.localConfiguration?.tag as? Music ?: return
-      _currentMusic.update { music }
+      val musicId = mediaItem?.mediaId
+      _currentMusicId.update { musicId }
    }
 
    override val repeatMode: StateFlow<PlayerManager.RepeatMode> = _repeatMode.asStateFlow()

@@ -31,8 +31,8 @@ class MainActivity : ComponentActivity() {
       setMainContent()
    }
 
-   override fun onStop() {
+   override fun onDestroy() {
       viewModel.onEvent(MainActivityEvent.OnActivityDestroyed)
-      super.onStop()
+      super.onDestroy()
    }
 }
