@@ -12,7 +12,9 @@ data class MusicListScreenState(
    val repeatMode: RepeatMode = RepeatMode.NONE,
    val showMissingPermissionBar: Boolean = false,
    val permissionStatus: PermissionStatus = PermissionStatus.GRANTED,
-   val alertDialogs: List<AlertDialog> = emptyList()
+   val alertDialogs: List<AlertDialog> = emptyList(),
+   val showTopFloatingMusicListItem: Boolean = false,
+   val showBottomFloatingMusicListItem: Boolean = false
 )
 
 sealed class AlertDialog

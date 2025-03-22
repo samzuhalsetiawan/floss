@@ -17,4 +17,7 @@ sealed class MusicListScreenEvent {
    data object OnPrevButtonClick: MusicListScreenEvent()
    data class OnShuffleButtonClick(val isActive: Boolean): MusicListScreenEvent()
    data class OnRepeatButtonClick(val repeatMode: RepeatMode): MusicListScreenEvent()
+   data object ShowTopFloatingMusicListItem: MusicListScreenEvent()
+   data object ShowBottomFloatingMusicListItem: MusicListScreenEvent()
+   data object HideFloatingMusicListItem: MusicListScreenEvent()
 }

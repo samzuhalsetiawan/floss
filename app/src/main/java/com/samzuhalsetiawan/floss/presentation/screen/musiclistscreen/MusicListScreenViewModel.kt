@@ -49,9 +49,11 @@ class MusicListScreenViewModel(
          is MusicListScreenEvent.OnRepeatButtonClick -> onRepeatButtonClick(event.repeatMode)
          is MusicListScreenEvent.OnShuffleButtonClick -> onShuffleButtonClick(event.isActive)
          is MusicListScreenEvent.OnResumeButtonClick -> onResumeButtonClick()
+         is MusicListScreenEvent.ShowBottomFloatingMusicListItem -> onShowBottomFloatingMusicListItem()
+         is MusicListScreenEvent.ShowTopFloatingMusicListItem -> onShowTopFloatingMusicListItem()
+         is MusicListScreenEvent.HideFloatingMusicListItem -> onHideFloatingMusicListItem()
       }
    }
-
 
    init {
       viewModelScope.launch {
@@ -102,6 +104,28 @@ class MusicListScreenViewModel(
          }
       }
    }
+
+   private fun onHideFloatingMusicListItem() {
+      _state.update { currentState ->
+         currentState.copy(
+            showTopFloatingMusicListItem = false,
+            showBottomFloatingMusicListItem = false
+         )
+      }
+   }
+
+   private fun onShowTopFloatingMusicListItem() {
+      _state.update { currentState ->
+         currentState.copy(showTopFloatingMusicListItem = true)
+      }
+   }
+
+   private fun onShowBottomFloatingMusicListItem() {
+      _state.update { currentState ->
+         currentState.copy(showBottomFloatingMusicListItem = true)
+      }
+   }
+
 
    private fun onShuffleButtonClick(isActive: Boolean) {
       playerUseCases.setShuffleModeEnabled(isActive)
