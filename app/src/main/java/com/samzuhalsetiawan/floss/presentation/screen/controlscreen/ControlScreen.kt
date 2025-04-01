@@ -14,16 +14,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.samzuhalsetiawan.floss.presentation.common.component.text.headlinetext.HeadlineText
-import com.samzuhalsetiawan.floss.presentation.common.component.text.normaltext.NormalText
 import com.samzuhalsetiawan.floss.presentation.common.component.albumart.AlbumArt
-import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.header.Header
-import com.samzuhalsetiawan.floss.presentation.common.component.musicprogressbar.MusicProgressBar
 import com.samzuhalsetiawan.floss.presentation.common.component.button.nextbutton.NextButton
 import com.samzuhalsetiawan.floss.presentation.common.component.button.playbutton.PlayButtonLarge
 import com.samzuhalsetiawan.floss.presentation.common.component.button.prevbutton.PrevButton
-import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatButton
-import com.samzuhalsetiawan.floss.presentation.common.component.button.shufflebutton.ShuffleButton
+import com.samzuhalsetiawan.floss.presentation.common.component.musicprogressbar.MusicProgressBar
+import com.samzuhalsetiawan.floss.presentation.common.component.text.headlinetext.HeadlineText
+import com.samzuhalsetiawan.floss.presentation.common.component.text.normaltext.NormalText
+import com.samzuhalsetiawan.floss.presentation.screen.controlscreen.component.header.Header
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 
 @Composable

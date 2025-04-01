@@ -44,3 +44,4 @@ fun MusicDTO.toMusic(): Music {
       albumArt = albumArt?.asBitmap()
    )
 }
+

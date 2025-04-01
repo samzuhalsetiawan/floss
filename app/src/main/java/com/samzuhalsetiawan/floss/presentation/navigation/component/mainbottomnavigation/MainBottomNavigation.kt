@@ -1,4 +1,4 @@
-package com.samzuhalsetiawan.floss.presentation.common.component.bottomnavigation
+package com.samzuhalsetiawan.floss.presentation.navigation.component.mainbottomnavigation
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -15,10 +15,10 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.samzuhalsetiawan.floss.presentation.navigation.Destination
+import com.samzuhalsetiawan.floss.presentation.navigation.destination.Destination
 
 @Composable
-fun BottomNavigation(
+fun MainBottomNavigation(
    navController: NavHostController = rememberNavController()
 ) {
    val navBackStackEntry by navController.currentBackStackEntryAsState()

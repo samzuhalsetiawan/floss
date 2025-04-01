@@ -1,6 +1,5 @@
 package com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen.component.musiclist
 
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.Arrangement
@@ -24,16 +23,16 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.samzuhalsetiawan.floss.domain.manager.PlayerManager.RepeatMode
-import com.samzuhalsetiawan.floss.presentation.common.component.text.normaltext.NormalText
-import com.samzuhalsetiawan.floss.presentation.common.component.text.subtext.SubText
-import com.samzuhalsetiawan.floss.presentation.common.component.musicprogressbar.MusicProgressBar
+import com.samzuhalsetiawan.floss.presentation.common.component.albumart.AlbumArtSmall
 import com.samzuhalsetiawan.floss.presentation.common.component.button.nextbutton.NextButton
+import com.samzuhalsetiawan.floss.presentation.common.component.button.pausebutton.PauseButton
+import com.samzuhalsetiawan.floss.presentation.common.component.button.playbutton.PlayButton
 import com.samzuhalsetiawan.floss.presentation.common.component.button.prevbutton.PrevButton
 import com.samzuhalsetiawan.floss.presentation.common.component.button.repeatbutton.RepeatButton
 import com.samzuhalsetiawan.floss.presentation.common.component.button.shufflebutton.ShuffleButton
-import com.samzuhalsetiawan.floss.presentation.common.component.albumart.AlbumArtSmall
-import com.samzuhalsetiawan.floss.presentation.common.component.button.pausebutton.PauseButton
-import com.samzuhalsetiawan.floss.presentation.common.component.button.playbutton.PlayButton
+import com.samzuhalsetiawan.floss.presentation.common.component.musicprogressbar.MusicProgressBar
+import com.samzuhalsetiawan.floss.presentation.common.component.text.normaltext.NormalText
+import com.samzuhalsetiawan.floss.presentation.common.component.text.subtext.SubText
 import com.samzuhalsetiawan.floss.presentation.common.model.Music
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 

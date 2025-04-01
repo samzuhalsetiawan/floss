@@ -3,36 +3,28 @@ package com.samzuhalsetiawan.floss.presentation
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.samzuhalsetiawan.floss.FlossApp
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
-   private val viewModel by viewModels<MainActivityViewModel>(
-      factoryProducer = {
-         viewModelFactory {
-            addInitializer(clazz = MainActivityViewModel::class) {
-               MainActivityViewModel(
-                  getIsFirstLaunch = (application as FlossApp).useCasesModule.getIsFirstLaunch,
-                  releasePlayerResources = (application as FlossApp).useCasesModule.releasePlayerResources
-               )
-            }
-         }
-      }
-   )
+   private var isAppReady = false
+
+   private val viewModel: MainActivityViewModel by viewModel()
 
    override fun onCreate(savedInstanceState: Bundle?) {
       super.onCreate(savedInstanceState)
       val splashScreen = installSplashScreen()
-      splashScreen.setKeepOnScreenCondition { !viewModel.state.value.isAppReady }
+      splashScreen.setKeepOnScreenCondition { !isAppReady }
       enableEdgeToEdge()
-      setMainContent()
+      viewModel.waitUntilInitializationCompleted {
+         setMainContent(it)
+         isAppReady = true
+      }
    }
 
    override fun onDestroy() {
-      viewModel.onEvent(MainActivityEvent.OnActivityDestroyed)
+      viewModel.releaseResources()
       super.onDestroy()
    }
 }

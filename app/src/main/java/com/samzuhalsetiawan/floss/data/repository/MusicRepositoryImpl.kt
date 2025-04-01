@@ -3,15 +3,9 @@ package com.samzuhalsetiawan.floss.data.repository
 import android.content.ContentUris
 import android.content.Context
 import android.media.MediaMetadataRetriever
-import android.net.Uri
 import android.provider.MediaStore
 import com.samzuhalsetiawan.floss.domain.model.Music
 import com.samzuhalsetiawan.floss.domain.repository.MusicRepository
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 class MusicRepositoryImpl(
    private val applicationContext: Context

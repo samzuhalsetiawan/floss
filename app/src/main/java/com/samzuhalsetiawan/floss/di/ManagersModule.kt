@@ -1,18 +1,14 @@
 package com.samzuhalsetiawan.floss.di
 
-import android.content.Context
 import com.samzuhalsetiawan.floss.data.manager.PermissionManagerImpl
 import com.samzuhalsetiawan.floss.data.manager.PlayerManagerImpl
 import com.samzuhalsetiawan.floss.domain.manager.PermissionManager
 import com.samzuhalsetiawan.floss.domain.manager.PlayerManager
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
+import org.koin.dsl.module
 
-class ManagersModule(
-   private val applicationContext: Context
-) {
-   val permissionManager: PermissionManager by lazy {
-      PermissionManagerImpl(applicationContext)
-   }
-   val playerManager: PlayerManager by lazy {
-      PlayerManagerImpl(applicationContext)
-   }
+val managersModule = module {
+   singleOf(::PermissionManagerImpl) bind PermissionManager::class
+   singleOf(::PlayerManagerImpl) bind PlayerManager::class
 }

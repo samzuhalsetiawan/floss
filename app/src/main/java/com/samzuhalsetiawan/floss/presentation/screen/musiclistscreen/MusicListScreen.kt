@@ -5,10 +5,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -16,7 +13,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,31 +24,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.layout.positionInWindow
-import androidx.compose.ui.layout.positionOnScreen
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.samzuhalsetiawan.floss.presentation.common.component.alertbar.missingpermissionbar.MissingPermissionBar
-import com.samzuhalsetiawan.floss.presentation.common.util.asBitmap
 import com.samzuhalsetiawan.floss.presentation.common.util.getActivity
 import com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen.component.musiclist.MusicList
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
-import kotlin.math.roundToInt
 
 @Composable
 fun MusicListScreen(
@@ -69,11 +54,6 @@ fun MusicListScreen(
       state = state,
       onEvent = viewModel::onEvent
    )
-//   for (alertDialog in state.alertDialogs) {
-//      when (alertDialog) {
-//
-//      }
-//   }
 }
 
 @Composable
@@ -81,8 +61,6 @@ private fun MusicListScreen(
    state: MusicListScreenState,
    onEvent: (MusicListScreenEvent) -> Unit
 ) {
-   val density = LocalDensity.current
-
    val readMediaAudioPermissionLauncher = rememberLauncherForActivityResult(
       contract = ActivityResultContracts.RequestPermission(),
       onResult = { isGranted ->
@@ -99,7 +77,8 @@ private fun MusicListScreen(
       contentWindowInsets = WindowInsets(0,0,0,0)
    ) { scaffoldPadding ->
       Column(
-         modifier = Modifier.padding(scaffoldPadding)
+         modifier = Modifier
+            .padding(scaffoldPadding)
       ) {
          if (state.isLoading) {
             Box(

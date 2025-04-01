@@ -3,7 +3,7 @@ package com.samzuhalsetiawan.floss.domain.usecase.playerusecase
 import com.samzuhalsetiawan.floss.domain.manager.PlayerManager
 
 class PlayerUseCases(
-   private val playerManager: PlayerManager
+   playerManager: PlayerManager
 ) {
    val getCurrentMusicIdFlow = GetCurrentMusicIdFlow(playerManager)
    val getIsPlayingFlow = GetIsPlayingFlow(playerManager)

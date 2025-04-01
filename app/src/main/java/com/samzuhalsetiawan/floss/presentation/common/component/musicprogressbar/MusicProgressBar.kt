@@ -2,15 +2,6 @@ package com.samzuhalsetiawan.floss.presentation.common.component.musicprogressba
 
 import androidx.annotation.FloatRange
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.Orientation
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.gestures.draggable
-import androidx.compose.foundation.gestures.rememberDraggableState
-import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -36,10 +27,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
@@ -47,9 +36,6 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.samzuhalsetiawan.floss.presentation.common.util.formatMillisToTime
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
-import kotlinx.coroutines.awaitCancellation
-import java.time.Duration
-import java.time.LocalTime
 import kotlin.math.roundToInt
 
 @Composable
@@ -91,7 +77,6 @@ private fun ProgressBar(
    LaunchedEffect(containerWidth, progress) {
       rawThumbOffset = containerWidth * progress
    }
-   val density = LocalDensity.current
    Box(
       modifier = modifier
          .onSizeChanged { containerWidth = it.width }

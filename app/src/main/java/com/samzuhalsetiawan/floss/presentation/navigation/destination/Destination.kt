@@ -1,4 +1,4 @@
-package com.samzuhalsetiawan.floss.presentation.navigation
+package com.samzuhalsetiawan.floss.presentation.navigation.destination
 
 import kotlinx.serialization.Serializable
 
