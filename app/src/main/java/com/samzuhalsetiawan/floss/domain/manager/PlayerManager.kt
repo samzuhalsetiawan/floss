@@ -1,6 +1,7 @@
 package com.samzuhalsetiawan.floss.domain.manager
 
 import com.samzuhalsetiawan.floss.domain.model.Music
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 interface PlayerManager {
@@ -17,15 +18,15 @@ interface PlayerManager {
 
    fun previous()
 
-   val isPlaying: StateFlow<Boolean>
+   val isPlaying: Flow<Boolean>
 
-   val shuffleEnabled: StateFlow<Boolean>
+   val shuffleEnabled: Flow<Boolean>
 
    fun setShuffleEnabled(shuffleEnabled: Boolean)
 
-   val currentMusicId: StateFlow<String?>
+   val currentMusicId: Flow<String?>
 
-   val repeatMode: StateFlow<RepeatMode>
+   val repeatMode: Flow<RepeatMode>
 
    fun setRepeatMode(repeatMode: RepeatMode)
 

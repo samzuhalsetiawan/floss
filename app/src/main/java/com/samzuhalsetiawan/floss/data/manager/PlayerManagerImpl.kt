@@ -14,6 +14,7 @@ import com.samzuhalsetiawan.floss.domain.model.Music
 import androidx.core.net.toUri
 import com.samzuhalsetiawan.floss.data.manager.util.toMedia3RepeatMode
 import com.samzuhalsetiawan.floss.data.manager.util.toRepeatMode
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -98,13 +99,13 @@ class PlayerManagerImpl(
       player.seekToPrevious()
    }
 
-   override val isPlaying: StateFlow<Boolean> = _isPlaying.asStateFlow()
+   override val isPlaying: Flow<Boolean> = _isPlaying
 
    override fun onIsPlayingChanged(isPlaying: Boolean) {
       _isPlaying.update { isPlaying }
    }
 
-   override val shuffleEnabled: StateFlow<Boolean> = _shuffleEnabled.asStateFlow()
+   override val shuffleEnabled: Flow<Boolean> = _shuffleEnabled
 
    override fun setShuffleEnabled(shuffleEnabled: Boolean) {
       player.shuffleModeEnabled = shuffleEnabled
@@ -114,14 +115,14 @@ class PlayerManagerImpl(
       _shuffleEnabled.update { shuffleModeEnabled }
    }
 
-   override val currentMusicId: StateFlow<String?> = _currentMusicId.asStateFlow()
+   override val currentMusicId: Flow<String?> = _currentMusicId
 
    override fun onMediaItemTransition(mediaItem: MediaItem?, reason: Int) {
       val musicId = mediaItem?.mediaId
       _currentMusicId.update { musicId }
    }
 
-   override val repeatMode: StateFlow<PlayerManager.RepeatMode> = _repeatMode.asStateFlow()
+   override val repeatMode: Flow<PlayerManager.RepeatMode> = _repeatMode
 
    override fun setRepeatMode(repeatMode: PlayerManager.RepeatMode) {
       player.repeatMode = repeatMode.toMedia3RepeatMode()
