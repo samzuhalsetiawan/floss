@@ -2,10 +2,10 @@ package com.samzuhalsetiawan.floss.domain.usecase
 
 import com.samzuhalsetiawan.floss.domain.repository.PreferencesRepository
 
-class GetIsFirstLaunch(
+class MarkAsNotFirstLaunch(
    private val preferencesRepository: PreferencesRepository
 ) {
-   suspend operator fun invoke(): Boolean {
-      return preferencesRepository.isFirstLaunch()
+   suspend operator fun invoke() {
+      preferencesRepository.setIsFirstLaunch(false)
    }
 }

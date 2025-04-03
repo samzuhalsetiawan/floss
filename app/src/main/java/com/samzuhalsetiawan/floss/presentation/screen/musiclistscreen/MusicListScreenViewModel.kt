@@ -4,28 +4,39 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samzuhalsetiawan.floss.domain.GetAllMusicError
 import com.samzuhalsetiawan.floss.domain.Result
+import com.samzuhalsetiawan.floss.domain.manager.PlayerManager
 import com.samzuhalsetiawan.floss.domain.manager.PlayerManager.RepeatMode
 import com.samzuhalsetiawan.floss.domain.usecase.GetAllMusic
-import com.samzuhalsetiawan.floss.domain.usecase.playerusecase.PlayerUseCases
+import com.samzuhalsetiawan.floss.domain.usecase.ListenToPlayerEvent
+import com.samzuhalsetiawan.floss.domain.usecase.PauseMusic
+import com.samzuhalsetiawan.floss.domain.usecase.PlayAllMusic
+import com.samzuhalsetiawan.floss.domain.usecase.PlayNextMusic
+import com.samzuhalsetiawan.floss.domain.usecase.PlayPreviousMusic
+import com.samzuhalsetiawan.floss.domain.usecase.ReloadMusics
+import com.samzuhalsetiawan.floss.domain.usecase.ResumeMusic
+import com.samzuhalsetiawan.floss.domain.usecase.SetRepeatMode
+import com.samzuhalsetiawan.floss.domain.usecase.SetShuffleModeEnabled
 import com.samzuhalsetiawan.floss.presentation.common.model.Music
 import com.samzuhalsetiawan.floss.presentation.common.util.toMusic
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
+import com.samzuhalsetiawan.floss.presentation.common.util.updateByCollectFromFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import kotlin.coroutines.coroutineContext
-
-private typealias RawMusic = com.samzuhalsetiawan.floss.domain.model.Music
 
 class MusicListScreenViewModel(
    private val getAllMusic: GetAllMusic,
-   private val playerUseCases: PlayerUseCases
-): ViewModel() {
-
-   private val _rawMusics = MutableStateFlow<List<RawMusic>>(emptyList())
+   private val reloadMusics: ReloadMusics,
+   private val playAllMusic: PlayAllMusic,
+   private val playNextMusic: PlayNextMusic,
+   private val playPreviousMusic: PlayPreviousMusic,
+   private val pauseMusic: PauseMusic,
+   private val resumeMusic: ResumeMusic,
+   private val setShuffleModeEnabled: SetShuffleModeEnabled,
+   private val setRepeatMode: SetRepeatMode,
+   private val listenToPlayerEvent: ListenToPlayerEvent,
+): ViewModel(), PlayerManager.Listener {
 
    private val _state = MutableStateFlow(MusicListScreenState())
    val state = _state.asStateFlow()
@@ -51,53 +62,41 @@ class MusicListScreenViewModel(
       }
    }
 
+   private fun showLoading() {
+      _state.update { it.copy(isLoading = true) }
+   }
+
+   private fun hideLoading() {
+      _state.update { it.copy(isLoading = false) }
+   }
+
    init {
-      viewModelScope.launch {
-         _state.update { it.copy(isLoading = true) }
-         getMusics()
-         registerPlayerListener()
-         _state.update { it.copy(isLoading = false) }
-      }
-      viewModelScope.launch {
-         _rawMusics.collect {
-            _state.update { currentState ->
-               currentState.copy(
-                  musics = it.map { rawMusic -> rawMusic.toMusic() }
-               )
-            }
-         }
+      getMusics()
+      listenToPlayerEvent(viewModelScope, this)
+   }
+
+   override fun onIsPlayingChanged(isPlaying: Boolean) {
+      _state.update { currentState ->
+         currentState.copy(isPlaying = isPlaying)
       }
    }
 
-   suspend fun registerPlayerListener() = CoroutineScope(coroutineContext).launch {
-      launch {
-         playerUseCases.getIsPlayingFlow().collect {
-            _state.update { currentState ->
-               currentState.copy(isPlaying = it)
-            }
-         }
+   override fun onCurrentMusicChanged(currentMusicId: String?) {
+      val music = _state.value.musics.find { it.id == currentMusicId }
+      _state.update { currentState ->
+         currentState.copy(currentMusic = music)
       }
-      launch {
-         playerUseCases.getCurrentMusicIdFlow().collect { musicId ->
-            val music = _state.value.musics.find { it.id == musicId }
-            _state.update { currentState ->
-               currentState.copy(currentMusic = music)
-            }
-         }
+   }
+
+   override fun onRepeatModeChanged(repeatMode: RepeatMode) {
+      _state.update { currentState ->
+         currentState.copy(repeatMode = repeatMode)
       }
-      launch {
-         playerUseCases.getRepeatModeFlow().collect {
-            _state.update { currentState ->
-               currentState.copy(repeatMode = it)
-            }
-         }
-      }
-      launch {
-         playerUseCases.getShuffleModeEnabledFlow().collect {
-            _state.update { currentState ->
-               currentState.copy(isShuffleModeActive = it)
-            }
-         }
+   }
+
+   override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {
+      _state.update { currentState ->
+         currentState.copy(isShuffleModeActive = shuffleModeEnabled)
       }
    }
 
@@ -124,33 +123,31 @@ class MusicListScreenViewModel(
 
 
    private fun onShuffleButtonClick(isActive: Boolean) {
-      playerUseCases.setShuffleModeEnabled(isActive)
+      setShuffleModeEnabled(isActive)
    }
 
    private fun onRepeatButtonClick(repeatMode: RepeatMode) {
-      playerUseCases.setRepeatMode(repeatMode)
+      setRepeatMode(repeatMode)
    }
 
    private fun onPrevButtonClick() {
-      playerUseCases.playPreviousMusic()
+      playPreviousMusic()
    }
 
    private fun onNextButtonClick() {
-      playerUseCases.playNextMusic()
+      playNextMusic()
    }
 
    private fun onPauseButtonClick() {
-      playerUseCases.pauseMusic()
+      pauseMusic()
    }
 
    private fun onResumeButtonClick() {
-      playerUseCases.resumeMusic()
+      resumeMusic()
    }
 
    private fun onPlayButtonClick(music: Music) {
-      val playlist = _rawMusics.value
-      val musicIndex = playlist.indexOfFirst { it.id == music.id }
-      playerUseCases.playPlaylist(playlist, musicIndex)
+      playAllMusic(startingMusicId = music.id)
    }
 
    private fun onChangePermissionStatus(status: PermissionStatus) {
@@ -172,9 +169,9 @@ class MusicListScreenViewModel(
 
    private fun onUpdateMusicList() {
       viewModelScope.launch {
-         _state.update { it.copy(isLoading = true) }
-         getMusics()
-         _state.update { it.copy(isLoading = false) }
+         showLoading()
+         reloadMusics()
+         hideLoading()
       }
    }
 
@@ -190,17 +187,18 @@ class MusicListScreenViewModel(
       }
    }
 
-   private suspend fun getMusics() {
-      withContext(Dispatchers.IO) {
-         val result = getAllMusic()
-         when (result) {
-            is Result.Success -> {
-               _rawMusics.update { result.data }
+   private fun getMusics() {
+      showLoading()
+      when (val result = getAllMusic()) {
+         is Result.Success -> {
+            _state.updateByCollectFromFlow(viewModelScope, result.data) { currentState, musics ->
+               currentState.copy(musics = musics.map { it.toMusic() }).also { hideLoading() }
             }
-            is Result.Failed -> {
-               when (result.error) {
-                  GetAllMusicError.NOT_ALLOWED_TO_READ_USER_MEDIA_AUDIO -> TODO("Request Permission")
-               }
+         }
+         is Result.Failed -> {
+            hideLoading()
+            when (result.error) {
+               GetAllMusicError.NOT_ALLOWED_TO_READ_USER_MEDIA_AUDIO -> TODO("Request Permission")
             }
          }
       }

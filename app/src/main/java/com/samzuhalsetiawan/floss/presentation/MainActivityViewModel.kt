@@ -2,13 +2,13 @@ package com.samzuhalsetiawan.floss.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.samzuhalsetiawan.floss.domain.usecase.GetIsFirstLaunch
-import com.samzuhalsetiawan.floss.domain.usecase.playerusecase.ReleasePlayerResources
-import com.samzuhalsetiawan.floss.presentation.navigation.destination.Destination
+import com.samzuhalsetiawan.floss.domain.usecase.DecideStartDestination
+import com.samzuhalsetiawan.floss.domain.usecase.ReleasePlayerResources
+import com.samzuhalsetiawan.floss.domain.Destination
 import kotlinx.coroutines.launch
 
 class MainActivityViewModel(
-   private val getIsFirstLaunch: GetIsFirstLaunch,
+   private val decideStartDestination: DecideStartDestination,
    private val releasePlayerResources: ReleasePlayerResources
 ): ViewModel() {
 
@@ -20,8 +20,7 @@ class MainActivityViewModel(
       onInitializationCompleted: (startDestination: Destination.Graph) -> Unit
    ) {
       viewModelScope.launch {
-         val isFirstLaunch = getIsFirstLaunch()
-         val startDestination = if (isFirstLaunch) Destination.Graph.Welcome else Destination.Graph.Main
+         val startDestination = decideStartDestination()
          onInitializationCompleted(startDestination)
       }
    }

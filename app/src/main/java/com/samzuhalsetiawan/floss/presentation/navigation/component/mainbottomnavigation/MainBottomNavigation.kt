@@ -15,7 +15,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.samzuhalsetiawan.floss.presentation.navigation.destination.Destination
+import com.samzuhalsetiawan.floss.domain.Destination
 
 @Composable
 fun MainBottomNavigation(

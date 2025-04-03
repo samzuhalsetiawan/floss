@@ -2,7 +2,7 @@ package com.samzuhalsetiawan.floss.presentation
 
 import androidx.activity.compose.setContent
 import com.samzuhalsetiawan.floss.presentation.navigation.MainNavigation
-import com.samzuhalsetiawan.floss.presentation.navigation.destination.Destination
+import com.samzuhalsetiawan.floss.domain.Destination
 import com.samzuhalsetiawan.floss.presentation.navigation.destination.main.mainGraph
 import com.samzuhalsetiawan.floss.presentation.navigation.destination.main.musiclistscreen.musicListScreen
 import com.samzuhalsetiawan.floss.presentation.navigation.destination.welcome.onboardingscreen.onboardingScreen

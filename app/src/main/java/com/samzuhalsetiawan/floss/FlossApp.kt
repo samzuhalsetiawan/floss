@@ -1,6 +1,7 @@
 package com.samzuhalsetiawan.floss
 
 import android.app.Application
+import com.samzuhalsetiawan.floss.di.coroutinesModule
 import com.samzuhalsetiawan.floss.di.managersModule
 import com.samzuhalsetiawan.floss.di.repositoriesModule
 import com.samzuhalsetiawan.floss.di.useCasesModule
@@ -18,7 +19,8 @@ class FlossApp : Application() {
             repositoriesModule,
             managersModule,
             useCasesModule,
-            viewModelsModule
+            viewModelsModule,
+            coroutinesModule,
          )
       }
    }

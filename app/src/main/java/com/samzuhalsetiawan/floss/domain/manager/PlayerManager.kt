@@ -37,4 +37,11 @@ interface PlayerManager {
       ALL
    }
 
+   interface Listener {
+      fun onIsPlayingChanged(isPlaying: Boolean) = Unit
+      fun onCurrentMusicChanged(currentMusicId: String?) = Unit
+      fun onRepeatModeChanged(repeatMode: RepeatMode) = Unit
+      fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) = Unit
+   }
+
 }

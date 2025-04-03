@@ -7,6 +7,11 @@ import android.graphics.BitmapFactory
 import androidx.activity.ComponentActivity
 import androidx.core.net.toUri
 import com.samzuhalsetiawan.floss.presentation.common.model.Music
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.time.Duration
 import java.util.Locale
 
@@ -45,3 +50,16 @@ fun MusicDTO.toMusic(): Music {
    )
 }
 
+fun <T1, T2> MutableStateFlow<T1>.updateByCollectFromFlow(
+   coroutineScope: CoroutineScope,
+   flow: Flow<T2>,
+   updateState: (T1, T2) -> T1
+) {
+   coroutineScope.launch {
+      flow.collect {
+         update { currentState ->
+            updateState(currentState, it)
+         }
+      }
+   }
+}

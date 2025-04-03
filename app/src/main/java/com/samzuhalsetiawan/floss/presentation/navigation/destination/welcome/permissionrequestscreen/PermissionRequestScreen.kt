@@ -2,7 +2,7 @@ package com.samzuhalsetiawan.floss.presentation.navigation.destination.welcome.p
 
 import androidx.navigation.compose.composable
 import com.samzuhalsetiawan.floss.presentation.navigation.MainNavigationScope
-import com.samzuhalsetiawan.floss.presentation.navigation.destination.Destination
+import com.samzuhalsetiawan.floss.domain.Destination
 import com.samzuhalsetiawan.floss.presentation.screen.permissionrequestscreen.PermissionRequestScreen
 import com.samzuhalsetiawan.floss.presentation.screen.permissionrequestscreen.PermissionRequestScreenNavigationEvent
 import com.samzuhalsetiawan.floss.presentation.screen.permissionrequestscreen.PermissionRequestScreenViewModel

@@ -8,7 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.samzuhalsetiawan.floss.presentation.navigation.MainNavigationScope
 import com.samzuhalsetiawan.floss.presentation.navigation.component.mainbottomnavigation.MainBottomNavigation
-import com.samzuhalsetiawan.floss.presentation.navigation.destination.Destination
+import com.samzuhalsetiawan.floss.domain.Destination
 
 fun MainNavigationScope.mainGraph(
    builder: MainNavigationScope.() -> Unit

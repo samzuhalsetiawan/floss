@@ -2,7 +2,7 @@ package com.samzuhalsetiawan.floss.presentation.navigation.destination.main.musi
 
 import androidx.navigation.compose.composable
 import com.samzuhalsetiawan.floss.presentation.navigation.MainNavigationScope
-import com.samzuhalsetiawan.floss.presentation.navigation.destination.Destination
+import com.samzuhalsetiawan.floss.domain.Destination
 import com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen.MusicListScreen
 import com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen.MusicListScreenViewModel
 import org.koin.androidx.compose.koinViewModel

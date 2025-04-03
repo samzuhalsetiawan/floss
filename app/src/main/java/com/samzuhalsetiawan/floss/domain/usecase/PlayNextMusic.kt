@@ -1,11 +1,11 @@
-package com.samzuhalsetiawan.floss.domain.usecase.playerusecase
+package com.samzuhalsetiawan.floss.domain.usecase
 
 import com.samzuhalsetiawan.floss.domain.manager.PlayerManager
 
-class PauseMusic(
+class PlayNextMusic(
    private val playerManager: PlayerManager
 ) {
    operator fun invoke() {
-      playerManager.pause()
+      playerManager.next()
    }
 }

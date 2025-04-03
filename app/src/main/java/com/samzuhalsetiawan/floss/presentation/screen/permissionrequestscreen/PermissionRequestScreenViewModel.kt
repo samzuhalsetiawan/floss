@@ -2,7 +2,7 @@ package com.samzuhalsetiawan.floss.presentation.screen.permissionrequestscreen
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.samzuhalsetiawan.floss.domain.usecase.SetIsFirstLaunch
+import com.samzuhalsetiawan.floss.domain.usecase.MarkAsNotFirstLaunch
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 
 class PermissionRequestScreenViewModel(
-   private val setIsFirstLaunch: SetIsFirstLaunch
+   private val markAsNotFirstLaunch: MarkAsNotFirstLaunch,
 ): ViewModel() {
 
    private val _state = MutableStateFlow(PermissionRequestScreenState())
@@ -28,7 +28,7 @@ class PermissionRequestScreenViewModel(
    private fun onPermissionLauncherResult() {
       viewModelScope.launch {
          _navigationEvent.send(PermissionRequestScreenNavigationEvent.NavigateToMusicListScreen)
-         setIsFirstLaunch(false)
+         markAsNotFirstLaunch()
       }
    }
 
