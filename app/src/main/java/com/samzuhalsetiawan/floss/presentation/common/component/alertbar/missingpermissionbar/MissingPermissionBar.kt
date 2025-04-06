@@ -17,7 +17,6 @@ import com.samzuhalsetiawan.floss.presentation.common.component.text.subtext.Sub
 @Composable
 fun MissingPermissionBar(
    modifier: Modifier = Modifier,
-   isFullDenied: Boolean = false,
    expanded: Boolean,
    description: String,
    onExpandButtonClick: () -> Unit,
@@ -51,7 +50,7 @@ fun MissingPermissionBar(
                TextButton(
                   onClick = onActionButtonClick
                ) {
-                  Text(if (isFullDenied) "Open Settings" else "Grant Permission")
+                  Text("Grant Permission")
                }
                TextButton(
                   onClick = onDismissRequest

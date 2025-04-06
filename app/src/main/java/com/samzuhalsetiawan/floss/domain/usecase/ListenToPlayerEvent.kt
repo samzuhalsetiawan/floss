@@ -3,12 +3,13 @@ package com.samzuhalsetiawan.floss.domain.usecase
 import com.samzuhalsetiawan.floss.domain.manager.PlayerManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.supervisorScope
 
 class ListenToPlayerEvent(
    private val playerManager: PlayerManager
 ) {
-   operator fun invoke(scope: CoroutineScope, listener: PlayerManager.Listener) {
-      scope.launch {
+   suspend operator fun invoke(listener: PlayerManager.Listener) {
+      supervisorScope {
          launch {
             playerManager.isPlaying.collect {
                listener.onIsPlayingChanged(it)

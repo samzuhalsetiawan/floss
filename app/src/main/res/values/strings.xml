@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Floss</string>
+    <string name="read_audio_files_missing_permission_bar_description">You don\'t give permission to us to read audio files in your device, So we can only read the audio files inside Ringtone folder</string>
 </resources>

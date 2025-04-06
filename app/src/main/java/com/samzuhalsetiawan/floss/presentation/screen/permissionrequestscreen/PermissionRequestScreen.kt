@@ -1,7 +1,5 @@
 package com.samzuhalsetiawan.floss.presentation.screen.permissionrequestscreen
 
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,10 +20,11 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.repeatOnLifecycle
+import com.samzuhalsetiawan.floss.presentation.common.component.alertdialog.readaudiofilespermissiondeniedpermanently.ReadAudioFilesPermissionDeniedPermanentlyAlertDialog
+import com.samzuhalsetiawan.floss.presentation.common.component.alertdialog.readaudiofilespermissionneeded.ReadAudioFilesPermissionNeededAlertDialog
 import com.samzuhalsetiawan.floss.presentation.common.component.button.normalbutton.NormalButton
 import com.samzuhalsetiawan.floss.presentation.common.component.text.headlinetext.HeadlineText
 import com.samzuhalsetiawan.floss.presentation.common.component.text.normaltext.NormalText
-import com.samzuhalsetiawan.floss.presentation.common.config.Config
 import com.samzuhalsetiawan.floss.presentation.screen.permissionrequestscreen.component.illustration.Illustration
 import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 
@@ -33,7 +33,7 @@ fun PermissionRequestScreen(
    viewModel: PermissionRequestScreenViewModel,
    onNavigationEvent: (PermissionRequestScreenNavigationEvent) -> Unit
 ) {
-   val state = viewModel.state.collectAsStateWithLifecycle()
+   val state by viewModel.state.collectAsStateWithLifecycle()
    val lifecycleOwner = LocalLifecycleOwner.current
 
    LaunchedEffect(lifecycleOwner) {
@@ -45,9 +45,40 @@ fun PermissionRequestScreen(
    }
 
    PermissionRequestScreen(
-      state = state.value,
+      state = state,
       onEvent = viewModel::onEvent
    )
+
+   for (alertDialog in state.alertDialogs) {
+      when (alertDialog) {
+         AlertDialog.ReadAudioFilesPermissionNeededAlertDialog -> {
+            ReadAudioFilesPermissionNeededAlertDialog(
+               onDismissRequest = {
+                  viewModel.onEvent(PermissionRequestScreenEvent.HideAlertDialog(alertDialog))
+               },
+               onGrantPermissionButtonClick = {
+                  viewModel.onEvent(PermissionRequestScreenEvent.AskPermissionButtonClick(alertDialog))
+               },
+               onIgnoreButtonClick = {
+                  viewModel.onEvent(PermissionRequestScreenEvent.PermissionIgnoreButtonClick(alertDialog))
+               }
+            )
+         }
+         AlertDialog.ReadAudioFilesPermissionDeniedPermanentlyAlertDialog -> {
+            ReadAudioFilesPermissionDeniedPermanentlyAlertDialog(
+               onDismissRequest = {
+                  viewModel.onEvent(PermissionRequestScreenEvent.HideAlertDialog(alertDialog))
+               },
+               onOpenSettingsButtonClick = {
+                  viewModel.onEvent(PermissionRequestScreenEvent.PermissionOpenSettingsButtonClick)
+               },
+               onIgnoreButtonClick = {
+                  viewModel.onEvent(PermissionRequestScreenEvent.PermissionIgnoreButtonClick(alertDialog))
+               }
+            )
+         }
+      }
+   }
 }
 
 @Composable
@@ -55,10 +86,6 @@ private fun PermissionRequestScreen(
    state: PermissionRequestScreenState,
    onEvent: (PermissionRequestScreenEvent) -> Unit
 ) {
-   val readAudioFilesPermissionLauncher = rememberLauncherForActivityResult(
-      contract = ActivityResultContracts.RequestPermission(),
-      onResult = { onEvent(PermissionRequestScreenEvent.OnPermissionLauncherResult) }
-   )
    Scaffold {  scaffoldPadding ->
       Box(
          modifier = Modifier.fillMaxSize()
@@ -82,7 +109,7 @@ private fun PermissionRequestScreen(
             NormalButton(
                text = "Next",
                onClick = {
-                  readAudioFilesPermissionLauncher.launch(Config.readAudiFilesPermission)
+                  onEvent(PermissionRequestScreenEvent.OnNextButtonClick)
                }
             )
          }

@@ -18,10 +18,12 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.getAndUpdate
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.onSubscription
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.updateAndGet
 import kotlinx.coroutines.withContext
 
 class MusicRepositoryImpl(
@@ -31,7 +33,7 @@ class MusicRepositoryImpl(
    private val _musics: MutableStateFlow<List<Music>> = MutableStateFlow(emptyList())
 
    override val musics: Flow<List<Music>> = _musics
-      .onStart { reloadMusics() }
+      .onStart { emit(_musics.updateAndGet { loadMusics() }) }
 
    private suspend fun loadMusics(): List<Music> {
       val projection = arrayOf(

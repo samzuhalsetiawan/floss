@@ -40,7 +40,7 @@ import com.samzuhalsetiawan.floss.presentation.theme.FlossTheme
 fun MusicList(
    modifier: Modifier = Modifier,
    expanded: Boolean,
-   music: Music,
+   music: Music?,
    isPlaying: Boolean = false,
    isShuffleOn: Boolean = false,
    repeatMode: RepeatMode = RepeatMode.NONE,
@@ -56,15 +56,19 @@ fun MusicList(
    ElevatedCard(
       modifier = modifier
          .animateContentSize()
-         .padding(2.dp)
          .then(
             if (expanded) {
-               Modifier.shadow(
-                  elevation = 1.dp,
-                  clip = false,
-                  shape = CardDefaults.shape,
-               )
-            } else Modifier
+               Modifier
+                  .padding(14.dp)
+                  .shadow(
+                     elevation = 1.dp,
+                     clip = false,
+                     shape = CardDefaults.shape,
+                  )
+            } else {
+               Modifier
+                  .padding(2.dp)
+            }
          ),
       onClick = {
          if (!expanded) onPlayButtonClick()
@@ -84,7 +88,7 @@ fun MusicList(
             modifier = Modifier
                .padding(start = 12.dp)
                .size(if (expanded) 84.dp else 48.dp),
-            albumArt = music.albumArt
+            albumArt = music?.albumArt
          )
          Column(
             verticalArrangement = Arrangement.Center
@@ -100,11 +104,11 @@ fun MusicList(
                   verticalArrangement = Arrangement.Center
                ) {
                   NormalText(
-                     text = music.title,
+                     text = music?.title ?: "___ / ___",
                   )
                   if (expanded) {
                      SubText(
-                        text = music.title
+                        text = music?.title ?: "___ / ___"
                      )
                   }
                }
