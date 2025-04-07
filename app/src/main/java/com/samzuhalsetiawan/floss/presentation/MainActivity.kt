@@ -5,7 +5,6 @@ import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultCallback
 import androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions
-import androidx.core.app.ActivityCompat
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import com.samzuhalsetiawan.floss.domain.manager.Permission
 import com.samzuhalsetiawan.floss.domain.manager.PermissionManager

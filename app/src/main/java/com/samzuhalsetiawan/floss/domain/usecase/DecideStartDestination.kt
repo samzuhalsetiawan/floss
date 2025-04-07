@@ -1,9 +1,7 @@
 package com.samzuhalsetiawan.floss.domain.usecase
 
-import com.samzuhalsetiawan.floss.domain.repository.PreferencesRepository
 import com.samzuhalsetiawan.floss.domain.Destination
-import com.samzuhalsetiawan.floss.domain.Error
-import com.samzuhalsetiawan.floss.domain.Result
+import com.samzuhalsetiawan.floss.domain.repository.PreferencesRepository
 
 class DecideStartDestination(
    private val preferencesRepository: PreferencesRepository

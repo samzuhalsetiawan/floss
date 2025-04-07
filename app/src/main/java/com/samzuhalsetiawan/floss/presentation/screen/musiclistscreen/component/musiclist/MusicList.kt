@@ -141,47 +141,69 @@ fun MusicList(
                   maxDuration = 30000L,
                   onSeekTo = {}
                )
-               Row(
-                  modifier = Modifier
-                     .fillMaxWidth(),
-                  horizontalArrangement = Arrangement.Center,
-                  verticalAlignment = Alignment.CenterVertically
-               ) {
-                  ShuffleButton(
-                     isShuffleOn = isShuffleOn,
-                     onClick = { onShuffleButtonClick(it) }
-                  )
-                  PrevButton(
-                     onClick = onPrevButtonClick
-                  )
-                  if (isPlaying) {
-                     PauseButton(
-                        onClick = onPauseButtonClick
-                     )
-                  } else {
-                     PlayButton(
-                        onClick = onPlayButtonClick
-                     )
-                  }
-                  NextButton(
-                     onClick = onNextButtonClick
-                  )
-                  RepeatButton(
-                     repeatMode = repeatMode,
-                     onClick = { onRepeatButtonClick(it) }
-                  )
-               }
+               MusicControlButtons(
+                  isShuffleOn = isShuffleOn,
+                  isPlaying = isPlaying,
+                  repeatMode = repeatMode,
+                  onShuffleButtonClick = onShuffleButtonClick,
+                  onPrevButtonClick = onPrevButtonClick,
+                  onPlayButtonClick = onPlayButtonClick,
+                  onPauseButtonClick = onPauseButtonClick,
+                  onNextButtonClick = onNextButtonClick,
+                  onRepeatButtonClick = onRepeatButtonClick
+               )
             }
          }
       }
    }
 }
 
+@Composable
+private fun MusicControlButtons(
+   isShuffleOn: Boolean,
+   isPlaying: Boolean,
+   repeatMode: RepeatMode,
+   onShuffleButtonClick: (Boolean) -> Unit,
+   onPrevButtonClick: () -> Unit,
+   onPlayButtonClick: () -> Unit,
+   onPauseButtonClick: () -> Unit,
+   onNextButtonClick: () -> Unit,
+   onRepeatButtonClick: (RepeatMode) -> Unit
+) {
+   Row(
+      modifier = Modifier
+         .fillMaxWidth(),
+      horizontalArrangement = Arrangement.Center,
+      verticalAlignment = Alignment.CenterVertically
+   ) {
+      ShuffleButton(
+         isShuffleOn = isShuffleOn,
+         onClick = { onShuffleButtonClick(it) }
+      )
+      PrevButton(
+         onClick = onPrevButtonClick
+      )
+      if (isPlaying) {
+         PauseButton(
+            onClick = onPauseButtonClick
+         )
+      } else {
+         PlayButton(
+            onClick = onPlayButtonClick
+         )
+      }
+      NextButton(
+         onClick = onNextButtonClick
+      )
+      RepeatButton(
+         repeatMode = repeatMode,
+         onClick = { onRepeatButtonClick(it) }
+      )
+   }
+}
 
-@Preview(
-   showBackground = true,
-//   backgroundColor = 0xFF0000
-)
+
+@Preview(showBackground = true)
 @Composable
 private fun MusicListPreview() {
    FlossTheme {

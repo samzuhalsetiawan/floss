@@ -1,6 +1,5 @@
 package com.samzuhalsetiawan.floss.presentation.screen.musiclistscreen
 
-import androidx.compose.ui.Alignment
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.samzuhalsetiawan.floss.domain.manager.Permission
@@ -27,11 +26,8 @@ import com.samzuhalsetiawan.floss.presentation.common.util.updateOnOtherFlowEmis
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlin.coroutines.resume
-import kotlin.coroutines.suspendCoroutine
 
 class MusicListScreenViewModel(
    private val getMusics: GetMusics,
@@ -63,7 +59,6 @@ class MusicListScreenViewModel(
 
    fun onEvent(event: MusicListScreenEvent) {
       when (event) {
-         is MusicListScreenEvent.OnMissingPermissionBarExpandButtonClick -> onMissingPermissionBarExpandButtonClick()
          is MusicListScreenEvent.OnMissingPermissionBarGrantPermissionButtonClick -> onMissingPermissionBarGrantPermissionButtonClick()
          is MusicListScreenEvent.OnMissingPermissionBarDismissButtonClick -> onMissingPermissionBarDismissButtonClick()
          is MusicListScreenEvent.OnPermissionDeniedPermanentlyAlertDialogOpenSettingsButtonClick -> onPermissionDeniedPermanentlyAlertDialogOpenSettingsButtonClick()
@@ -74,8 +69,6 @@ class MusicListScreenViewModel(
          is MusicListScreenEvent.OnPrevButtonClick -> onPrevButtonClick()
          is MusicListScreenEvent.OnRepeatButtonClick -> onRepeatButtonClick(event.repeatMode)
          is MusicListScreenEvent.OnShuffleButtonClick -> onShuffleButtonClick(event.isActive)
-         is MusicListScreenEvent.OnCurrentMusicListItemScrolledOutOffVisibleScreen -> onCurrentMusicListItemScrolledOutOffVisibleScreen(event.outLocation)
-         is MusicListScreenEvent.OnCurrentMusicListItemScrolledBackIntoVisibleScreen -> onCurrentMusicListItemScrolledBackIntoVisibleScreen()
       }
    }
 
@@ -96,12 +89,6 @@ class MusicListScreenViewModel(
 
    private suspend fun subscribeToMusicPlayerEvents() {
       listenToPlayerEvent(this@MusicListScreenViewModel)
-   }
-
-   private fun onMissingPermissionBarExpandButtonClick() {
-      _state.update { currentState ->
-         currentState.copy(isMissingPermissionBarExpanded = !currentState.isMissingPermissionBarExpanded)
-      }
    }
 
    private fun onMissingPermissionBarGrantPermissionButtonClick() {
@@ -156,21 +143,6 @@ class MusicListScreenViewModel(
       setShuffleModeEnabled(isActive)
    }
 
-   private fun onCurrentMusicListItemScrolledOutOffVisibleScreen(outLocation: Alignment.Vertical) {
-      _state.update { currentState ->
-         currentState.copy(
-            isFloatingMusicListItemShowed = true,
-            floatingMusicListItemPosition = outLocation
-         )
-      }
-   }
-
-   private fun onCurrentMusicListItemScrolledBackIntoVisibleScreen() {
-      _state.update { currentState ->
-         currentState.copy(isFloatingMusicListItemShowed = false)
-      }
-   }
-
    override fun onIsPlayingChanged(isPlaying: Boolean) {
       _state.update { currentState ->
          currentState.copy(isPlaying = isPlaying)
@@ -216,7 +188,6 @@ class MusicListScreenViewModel(
    private fun hideMissingPermissionBar() {
       _state.update { currentState ->
          currentState.copy(
-            isMissingPermissionBarExpanded = false,
             isMissingPermissionBarShowed = false
          )
       }

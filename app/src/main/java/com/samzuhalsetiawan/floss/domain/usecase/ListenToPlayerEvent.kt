@@ -1,7 +1,6 @@
 package com.samzuhalsetiawan.floss.domain.usecase
 
 import com.samzuhalsetiawan.floss.domain.manager.PlayerManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.supervisorScope
 

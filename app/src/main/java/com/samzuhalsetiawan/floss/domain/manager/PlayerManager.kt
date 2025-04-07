@@ -2,7 +2,6 @@ package com.samzuhalsetiawan.floss.domain.manager
 
 import com.samzuhalsetiawan.floss.domain.model.Music
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.StateFlow
 
 interface PlayerManager {
 

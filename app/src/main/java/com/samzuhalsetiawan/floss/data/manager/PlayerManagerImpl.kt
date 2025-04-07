@@ -2,22 +2,20 @@ package com.samzuhalsetiawan.floss.data.manager
 
 import android.content.ComponentName
 import android.content.Context
+import androidx.core.net.toUri
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
+import com.samzuhalsetiawan.floss.data.manager.util.toMedia3RepeatMode
+import com.samzuhalsetiawan.floss.data.manager.util.toRepeatMode
 import com.samzuhalsetiawan.floss.data.service.BackgroundPlayerService
 import com.samzuhalsetiawan.floss.domain.manager.PlayerManager
 import com.samzuhalsetiawan.floss.domain.model.Music
-import androidx.core.net.toUri
-import com.samzuhalsetiawan.floss.data.manager.util.toMedia3RepeatMode
-import com.samzuhalsetiawan.floss.data.manager.util.toRepeatMode
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class PlayerManagerImpl(
@@ -32,13 +30,13 @@ class PlayerManagerImpl(
    private val player: Player
       get() = requireNotNull(mediaController)
 
-   private val _isPlaying = MutableStateFlow<Boolean>(false)
+   private val _isPlaying = MutableStateFlow(false)
 
-   private val _shuffleEnabled = MutableStateFlow<Boolean>(false)
+   private val _shuffleEnabled = MutableStateFlow(false)
 
    private val _currentMusicId = MutableStateFlow<String?>(null)
 
-   private val _repeatMode = MutableStateFlow<PlayerManager.RepeatMode>(PlayerManager.RepeatMode.NONE)
+   private val _repeatMode = MutableStateFlow(PlayerManager.RepeatMode.NONE)
 
    init {
       initializeMediaController()

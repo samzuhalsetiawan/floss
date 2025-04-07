@@ -1,37 +1,19 @@
 package com.samzuhalsetiawan.floss.presentation.common.util
 
-import android.content.Context
-import android.content.ContextWrapper
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import androidx.activity.ComponentActivity
 import androidx.core.net.toUri
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.samzuhalsetiawan.floss.presentation.common.model.Music
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.flowOn
-import kotlinx.coroutines.flow.single
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.supervisorScope
 import java.time.Duration
 import java.util.Locale
 import kotlin.coroutines.coroutineContext
 
 private typealias MusicDTO = com.samzuhalsetiawan.floss.domain.model.Music
-
-tailrec fun Context.getActivity(): ComponentActivity? = when (this) {
-   is ComponentActivity -> this
-   is ContextWrapper -> baseContext.getActivity()
-   else -> null
-}
 
 fun formatMillisToTime(millis: Long): String {
    val duration = Duration.ofMillis(millis)
